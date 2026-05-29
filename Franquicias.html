@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Franquicias | Hot Rolls</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend:wght@300;400;700;900&family=Shadows+Into+Light&family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* COLORES OFICIALES HOT ROLLS */
+            --hr-green: #2BBF65;      
+            --hr-yellow: #FFD72E;     
+            --hr-orange: #FF511B;     
+            --hr-dark-green: #196D49; 
+            --hr-deep-green: #0C2D1E; 
+            --hr-beige: #F6EFBB;      
+            --hr-white: #FFFFFF;
+            --hr-black: #000000;
+            --hr-gray-light: #EEEEEE;
+            
+            /* COLORES MANGO (Para el Footer) */
+            --mango: #fdea14;
+            --dark: #1C1C1C;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+
+        body { 
+            font-family: 'Lexend', sans-serif; 
+            background-color: var(--hr-beige); 
+            color: var(--hr-black); 
+            overflow-x: hidden; 
+        }
+
+        /* =========================================
+           SISTEMA BILINGÜE
+           ========================================= */
+        body.lang-es .en-text { display: none !important; }
+        body.lang-es .es-text { display: inline !important; }
+        body.lang-en .es-text { display: none !important; }
+        body.lang-en .en-text { display: inline !important; }
+
+        .big-title { 
+            font-family: 'Bebas Neue', sans-serif; 
+            text-transform: uppercase; 
+            line-height: 0.9; 
+            margin: 0; 
+            letter-spacing: 2px;
+        }
+
+        /* =========================================
+           NAVBAR ESTRUCTURA MAESTRA (Estilo Hot Rolls)
+           ========================================= */
+        .navbar {
+            position: fixed;
+            top: 25px; 
+            left: 50%;
+            transform: translateX(-50%); 
+            width: 90%; /* Ajuste para dar espacio al botón de idioma */
+            max-width: 1400px;
+            padding: 10px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10000;
+            background-color: var(--hr-beige);
+            border-radius: 50px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+            transition: all 0.3s ease;
+            border: 2px solid rgba(0,0,0,0.05);
+        }
+
+        .navbar.scrolled {
+            top: 15px;
+            padding: 8px 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
+        }
+
+        /* 1. IZQUIERDA: Logo Mango BC */
+        .logo { text-decoration: none; display: flex; align-items: center; z-index: 1002; transition: transform 0.3s; }
+        .logo:hover { transform: scale(1.05) translateY(-2px); }
+        .nav-logo-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            padding: 2px 0;
+        }
+        .nav-logo { height: 38px !important; width: auto !important; display: block; object-fit: contain; }
+
+        /* 2. CENTRO: Logo Marca (Hot Rolls) */
+        .brand-center-logo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .brand-center-logo:hover {
+            transform: translateX(-50%) scale(1.08) translateY(-2px);
+        }
+        .brand-logo-img {
+            height: 55px; 
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* 3. DERECHA: Enlaces y CTA */
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: clamp(15px, 2vw, 25px); 
+            align-items: center;
+            margin: 0;
+            z-index: 1001;
+        }
+        .nav-links li a {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+            color: var(--hr-black);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+        .nav-links li a:hover { color: var(--hr-orange); }
+
+        .nav-cta {
+            background-color: var(--hr-black) !important; 
+            color: var(--hr-white) !important;
+            font-family: 'Lexend', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: clamp(0.7rem, 0.9vw, 0.8rem) !important;
+            padding: 10px 20px !important;
+            border-radius: 50px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            background-color: var(--hr-orange) !important;
+            box-shadow: 0 6px 15px rgba(255, 81, 27, 0.4);
+        }
+
+        /* BOTÓN DE IDIOMA FLOTANTE (ARRIBA DERECHA) */
+        .lang-floating {
+            position: fixed; top: 25px; right: 2%;
+            background: var(--hr-beige); 
+            border: 2px solid var(--hr-black); color: var(--hr-black);
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; font-weight: 800; font-family: 'Lexend', sans-serif; font-size: 0.85rem;
+            z-index: 10001; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, color 0.3s, box-shadow 0.3s, top 0.4s ease, border-color 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .lang-floating:hover {
+            background: var(--hr-orange); color: var(--hr-white); border-color: var(--hr-orange);
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(255, 81, 27, 0.4);
+        }
+        .lang-floating.scrolled {
+            top: 15px; /* Sube junto con el navbar al hacer scroll */
+        }
+
+        /* HAMBURGUESA */
+        .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; z-index: 1002; padding: 10px;}
+        .hamburger span { width: 30px; height: 3px; background-color: var(--hr-black); border-radius: 3px; transition: transform 0.4s, opacity 0.4s; }
+
+        @media (min-width: 993px) and (max-width: 1250px) {
+            .navbar { width: 85%; }
+            .lang-floating { right: 2%; }
+            .nav-links { gap: 15px; }
+        }
+
+        /* =========================================
+           CARRUSEL HERO SECTION
+           ========================================= */
+        .hero-carousel { position: relative; width: 100%; height: 100vh; overflow: hidden; background-color: var(--hr-deep-green); }
+        .carousel-track { display: flex; height: 100%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .carousel-slide { min-width: 100%; height: 100%; position: relative; }
+        .banner-image { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4); color: var(--hr-white); border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 20; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .carousel-btn:hover { background: var(--hr-orange); transform: translateY(-50%) scale(1.1); }
+        .carousel-btn.prev { left: 2%; }
+        .carousel-btn.next { right: 2%; }
+
+        .carousel-dots { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 20; }
+        .dot { width: 15px; height: 15px; background: rgba(255, 255, 255, 0.4); border-radius: 50%; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+        .dot.active { background: var(--hr-yellow); border-color: var(--hr-black); transform: scale(1.2); }
+
+        /* =========================================
+           TUTI MASCOT Y STATS
+           ========================================= */
+        .tuti-stats { position: absolute; right: 8%; top: -65px; width: 110px; z-index: 15; transform: rotate(20deg); filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.5)); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .stats-bar:hover .tuti-stats { transform: translateY(-15px) rotate(5deg) scale(1.15); }
+        .tuti-walker { position: absolute; left: -50px; top: 150px; width: 180px; opacity: 0.9; transform: rotate(-10deg); z-index: 2; pointer-events: none; transition: all 0.3s ease;}
+        .tuti-footer { position: absolute; left: 50%; top: -100px; transform: translateX(-50%); width: 180px; z-index: 5; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); transition: all 0.3s ease;}
+
+        .stats-bar { background: var(--hr-black); color: var(--hr-white); padding: 60px 8%; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; position: relative; z-index: 10; }
+        .stat-item { border-left: 5px solid var(--hr-green); padding-left: 20px; position: relative;}
+        .stat-item h3 { font-family: 'Bebas Neue', sans-serif; font-size: 4.5rem; margin: 0; color: var(--hr-yellow); letter-spacing: 2px;}
+        .stat-item p { text-transform: uppercase; font-weight: 700; color: var(--hr-white); margin-top: 5px; font-size: 0.9rem;}
+
+        /* =========================================
+           VITRINA DE MENÚ
+           ========================================= */
+        .menu-section { padding: 100px 5%; background-color: var(--hr-beige); text-align: center; position: relative; }
+        .menu-header { margin-bottom: 80px; }
+        .menu-header h2 { font-size: clamp(4rem, 8vw, 5.5rem); color: var(--hr-deep-green); }
+        .menu-header p.compliance { font-size: 0.75rem; font-weight: 800; color: var(--hr-dark-green); margin-top: 15px; letter-spacing: 2px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1400px; margin: 0 auto; }
+        
+        .menu-item { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+        
+        .menu-item .main-img { 
+            width: 100%; 
+            max-width: 280px; 
+            object-fit: contain; 
+            margin-bottom: 25px; 
+            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.15)); 
+            transition: transform 0.3s ease; 
+            position: relative;
+            z-index: 2; 
+        }
+        .menu-item:hover .main-img { transform: translateY(-10px) scale(1.05); }
+
+        .script-subtitle { font-family: 'Shadows Into Light', cursive; color: #888; font-size: 1.8rem; margin-bottom: 5px; line-height: 1; }
+        .item-title { font-family: 'Bebas Neue', sans-serif; color: var(--hr-black); font-size: 2.5rem; letter-spacing: 1px; margin-bottom: 15px; line-height: 1; }
+        .item-desc { font-family: 'Lexend', sans-serif; font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; }
+        .item-btn { background-color: var(--hr-deep-green); color: var(--hr-white); font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; padding: 12px 35px; border-radius: 50px; text-decoration: none; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .item-btn:hover { background-color: var(--hr-green); color: var(--hr-black); transform: translateY(-2px); }
+
+        /* =========================================
+           SECCIÓN: COMBOS (Estilo Corporativo)
+           ========================================= */
+        .promo-section { 
+            padding: 120px 5%; 
+            background-color: var(--hr-dark-green); 
+            text-align: center; 
+            position: relative;
+        }
+        
+        .promo-header { margin-bottom: 70px; }
+        .promo-header h2 { 
+            font-size: clamp(3.5rem, 7vw, 5rem); 
+            color: var(--hr-yellow); 
+            letter-spacing: 1px;
+        }
+
+        .promo-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        
+        .combo-card { 
+            background-color: var(--hr-white); 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative; 
+            z-index: 1;
+            overflow: visible; 
+        }
+        
+        .combo-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4); 
+        }
+
+        .peek-mascot-combo {
+            position: absolute;
+            top: 10px;
+            right: 30px;
+            width: 90px;
+            z-index: -1; 
+            opacity: 0;
+            transform: translateY(0) rotate(-10deg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; 
+        }
+
+        /* Solo aplica hover en PC */
+        @media (hover: hover) {
+            .combo-card:hover .peek-mascot-combo {
+                transform: translateY(-70px) rotate(10deg); 
+                opacity: 1;
+            }
+        }
+        
+        .combo-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            background-color: var(--hr-gray-light); 
+            overflow: hidden;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        
+        .combo-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            object-position: center;
+        }
+        
+        .combo-price-tag {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--hr-orange);
+            color: var(--hr-white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            padding: 8px 25px 5px;
+            letter-spacing: 1px;
+            border-top-left-radius: 12px;
+        }
+
+        .combo-content {
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--hr-white);
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        
+        .combo-content h3 { 
+            font-family: 'Bebas Neue', sans-serif; 
+            font-size: 2.4rem; 
+            color: var(--hr-black); 
+            margin-bottom: 10px; 
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+        
+        .combo-content p { 
+            font-family: 'Lexend', sans-serif; 
+            font-size: 0.95rem; 
+            color: #555; 
+            line-height: 1.6; 
+            margin-bottom: 25px; 
+            flex-grow: 1;
+        }
+        
+        .combo-btn { 
+            background-color: var(--hr-deep-green); 
+            color: var(--hr-white); 
+            font-family: 'Bebas Neue', sans-serif; 
+            font-size: 1.3rem; 
+            padding: 12px; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            letter-spacing: 1px; 
+            transition: all 0.3s ease; 
+            text-align: center;
+            width: 100%;
+            display: block;
+        }
+        
+        .combo-btn:hover { 
+            background-color: var(--hr-green); 
+            color: var(--hr-deep-green);
+        }
+
+        /* =========================================
+           SECCIÓN: NOSOTROS
+           ========================================= */
+        .about-section { padding: 150px 8%; background-color: var(--hr-beige); display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; }
+        .about-text h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 6vw, 6rem); color: var(--hr-deep-green); line-height: 0.9; margin-bottom: 30px; }
+        .about-text p { font-family: 'Lexend', sans-serif; font-size: 1.1rem; line-height: 1.8; color: #444; margin-bottom: 20px; }
+        .about-text .highlight { color: var(--hr-orange); font-weight: 900; }
+        
+        .about-image-wrapper { position: relative; }
+        .about-img { width: 100%; border-radius: 20px; border: 6px solid var(--hr-black); box-shadow: -20px 20px 0 var(--hr-green); object-fit: cover; position: relative; z-index: 2;}
+
+        .about-deco-mascot {
+            position: absolute;
+            z-index: 10; 
+            filter: drop-shadow(4px 4px 0 var(--hr-black)); 
+            pointer-events: none;
+        }
+        
+        .mascot-about-top { width: 100px; top: -25px; right: -25px; transform: rotate(20deg); }
+        .mascot-about-left { width: 130px; bottom: -35px; left: -35px; transform: rotate(-15deg); }
+        .mascot-about-corner { width: 90px; top: -20px; left: -20px; transform: rotate(-25deg); }
+
+        /* =========================================
+           SECCIÓN DE RESPIRO
+           ========================================= */
+        .breathing-section { position: relative; background-color: var(--hr-beige); padding: 150px 5%; display: flex; justify-content: center; align-items: center; text-align: center; min-height: 70vh; overflow: hidden; }
+        .breathing-text { position: relative; z-index: 10; max-width: 900px; }
+        .breathing-text h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 8vw, 8.5rem); color: var(--hr-dark-green); line-height: 0.85; letter-spacing: 2px; margin: 0; text-transform: uppercase; }
+        .breathing-text h2 .text-black { color: var(--hr-black); }
+        .breathing-text p { font-family: 'Lexend', sans-serif; font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 900; color: var(--hr-orange); margin-top: 30px; letter-spacing: 2px; text-transform: uppercase; }
+        .floating-items img { position: absolute; z-index: 5; filter: drop-shadow(15px 20px 15px rgba(0,0,0,0.15)); }
+        
+        .float-tuti { top: 15%; left: 10%; width: 140px; animation: float1 6s ease-in-out infinite; }
+        .float-ing-1 { top: 15%; right: 12%; width: 140px; animation: float2 5s ease-in-out infinite; } 
+        .float-ing-2 { bottom: 12%; left: 15%; width: 160px; animation: float3 7s ease-in-out infinite; } 
+        .float-ing-3 { bottom: 20%; right: 15%; width: 125px; animation: float4 5.5s ease-in-out infinite; }
+        
+        @keyframes float1 { 0%, 100% { transform: translateY(0) rotate(-15deg); } 50% { transform: translateY(-25px) rotate(-5deg); } }
+        @keyframes float2 { 0%, 100% { transform: translateY(0) rotate(25deg); } 50% { transform: translateY(-20px) rotate(35deg); } }
+        @keyframes float3 { 0%, 100% { transform: translateY(0) rotate(10deg); } 50% { transform: translateY(-30px) rotate(0deg); } }
+        @keyframes float4 { 0%, 100% { transform: translateY(0) rotate(-30deg); } 50% { transform: translateY(-15px) rotate(-20deg); } }
+
+        /* =========================================
+           SECCIÓN: NÚMEROS QUE HABLAN
+           ========================================= */
+        .numbers-section { background-color: var(--hr-dark-green); color: var(--hr-white); padding: 120px 5% 80px; text-align: center; position: relative; overflow: hidden; }
+        .rollo-image-container { position: absolute; top: 50%; right: -5%; left: auto; transform: translateY(-50%) rotate(-15deg); width: 100%; max-width: 550px; z-index: 1; opacity: 0.45; pointer-events: none; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5)); }
+        .rollo-image-container img { width: 100%; height: auto; display: block; object-fit: contain; }
+        .numbers-title { position: relative; z-index: 10; margin-bottom: 60px; }
+        .numbers-title h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 8vw, 6rem); letter-spacing: 2px; line-height: 1; margin: 0; text-shadow: 0 5px 20px rgba(0,0,0,0.6); }
+        .numbers-title p { font-family: 'Lexend', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; margin-top: 5px; text-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+        .numbers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-bottom: 50px; position: relative; z-index: 10; max-width: 1200px; margin-left: auto; margin-right: auto;}
+        .num-card { background: var(--hr-white); border: 4px solid var(--hr-black); border-radius: 20px; padding: 45px 30px 35px; box-shadow: 8px 8px 0 var(--hr-yellow); transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; justify-content: center;}
+        .num-card:hover { transform: translate(-5px, -5px); box-shadow: 13px 13px 0 var(--hr-orange); }
+        .card-badge { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: var(--hr-black); color: var(--hr-white); font-family: 'Bebas Neue', sans-serif; padding: 6px 20px; border-radius: 20px; font-size: 1.3rem; letter-spacing: 2px; white-space: nowrap; }
+        .num-card h3 { color: var(--hr-black); font-family: 'Bebas Neue', sans-serif; font-size: 5.5rem; line-height: 1; margin: 15px 0 5px; }
+        .num-card p { color: var(--hr-dark-green); font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; text-transform: uppercase; margin: 0; }
+        .numbers-subtext { font-size: 1.2rem; line-height: 1.6; font-weight: 700; position: relative; z-index: 10; text-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+
+        /* =========================================
+           SECCIÓN: KIOSKOS PLUG & PLAY
+           ========================================= */
+        .kiosk-section { background: linear-gradient(to bottom, var(--hr-dark-green) 0%, var(--hr-black) 150px); color: var(--hr-white); position: relative; padding: 0; display: grid; grid-template-columns: 40% 60%; align-items: stretch; overflow: hidden; }
+        .kiosk-bg-shape { position: absolute; top: 0; left: 0; width: 45%; height: 100%; background-color: var(--hr-dark-green); clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); z-index: 1; }
+        .kiosk-content { position: relative; z-index: 2; padding: 80px 10% 80px 8%; display: flex; flex-direction: column; justify-content: center; }
+        .kiosk-title { font-family: 'Shadows Into Light', cursive; font-size: clamp(3rem, 5vw, 4.5rem); line-height: 1; margin-bottom: 15px; }
+        .kiosk-title .ampersand { font-family: 'Bebas Neue', sans-serif; color: var(--hr-yellow); font-size: clamp(3.5rem, 6vw, 5rem); vertical-align: middle; }
+        .kiosk-subtitle { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.6rem, 2.5vw, 2.2rem); letter-spacing: 1px; line-height: 1.2; margin-bottom: 15px; }
+        
+        .kiosk-list { list-style: none; margin-bottom: 0; }
+        .kiosk-list li { font-size: 1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 15px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        .kiosk-list li::before { content: ''; display: inline-block; width: 12px; height: 12px; background-color: var(--hr-yellow); border-radius: 50%; flex-shrink: 0; }
+        .kiosk-image-wrapper { position: relative; z-index: 0; margin-left: -5%; width: 105%; height: 100%; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 150px); mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,1) 150px); }
+        .kiosk-image-wrapper img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; }
+        .kiosk-footer-text { grid-column: 1 / -1; background-color: var(--hr-black); text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.8rem, 3vw, 2.5rem); padding: 30px 5%; margin: 0; letter-spacing: 1.5px; position: relative; z-index: 2; }
+        .kiosk-footer-text span { color: var(--hr-yellow); }
+
+        /* =========================================
+           SECCIÓN DE CONTACTO
+           ========================================= */
+        .contact-section { padding: 150px 8% 120px; background: var(--hr-beige); position: relative; }
+        .form-wrapper { position: relative; max-width: 1000px; margin: 0 auto; z-index: 10; }
+        .tuti-mascot-form { position: absolute; top: -110px; right: 50px; width: 130px; z-index: -1; transform: translateY(100px); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tuti-bubble { position: absolute; top: -150px; right: 170px; background: var(--hr-white); color: var(--hr-black); padding: 15px 25px; border-radius: 20px; border-bottom-right-radius: 0; font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 1px; opacity: 0; transform: translateY(20px); transition: all 0.4s ease 0.1s; box-shadow: 4px 4px 0 var(--hr-black); border: 3px solid var(--hr-black); z-index: -1; }
+        .form-wrapper:hover .tuti-mascot-form { transform: translateY(0) rotate(8deg); }
+        .form-wrapper:hover .tuti-bubble { opacity: 1; transform: translateY(0); }
+        .form-container { background: var(--hr-white); display: grid; grid-template-columns: 1fr 1fr; box-shadow: 0 30px 60px rgba(0,0,0,0.1); border-radius: 20px; overflow: hidden; border: 4px solid var(--hr-black); }
+        .form-info { background: var(--hr-yellow); color: var(--hr-black); padding: 60px; display: flex; flex-direction: column; justify-content: center;}
+        .form-info h2 { font-size: clamp(3rem, 5vw, 4.5rem); line-height: 0.9; }
+        .form-info ul { list-style: none; padding: 0; margin-top: 25px; font-weight: 700; font-size: 1.1rem; line-height: 2; }
+        .form-info ul li { margin-bottom: 5px; }
+        .form-fields { padding: 60px; background: var(--hr-white); }
+        input, select, textarea { width: 100%; padding: 18px; margin-bottom: 20px; border: 2px solid #EEE; border-radius: 8px; font-family: 'Lexend', sans-serif; font-size: 1rem; background: #FAFAFA; }
+        input:focus, select:focus, textarea:focus { border-color: var(--hr-green); outline: none; background: var(--hr-white);}
+        .btn-submit { background: var(--hr-black); color: var(--hr-white); border: none; padding: 20px; width: 100%; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s; box-shadow: 5px 5px 0 var(--hr-green); }
+        .btn-submit:hover { background: var(--hr-deep-green); transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--hr-green); }
+
+        /* =========================================
+           FOOTER CORPORATIVO
+           ========================================= */
+        footer { background: var(--dark); padding: 80px 5% 40px; color: var(--white); font-family: 'Open Sans', sans-serif; position: relative;}
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 50px; max-width: 1400px; margin: 0 auto; }
+        .footer-col h4 { font-family: 'Montserrat', sans-serif; color: var(--mango); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; font-weight: 700;}
+        .footer-col a { color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;}
+        .footer-col a:hover, .footer-col a:focus { color: var(--white); transform: translateX(5px); outline: none; }
+        .footer-bottom { text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; padding-top: 30px; color: #666; font-size: 0.8rem; font-family: 'Open Sans', sans-serif;}
+
+        /* =========================================
+           ¡AQUÍ ESTÁN LAS CORRECCIONES PARA MÓVILES!
+           ========================================= */
+        @media (max-width: 992px) {
+            .navbar { width: 100%; top: 0; border-radius: 0; padding: 15px 5%; border: none; border-bottom: 2px solid rgba(0,0,0,0.1); }
+            .navbar.scrolled { top: 0; }
+            .hamburger { display: flex; }
+            .brand-logo-img { height: 40px; }
+            .nav-logo { height: 28px !important; } 
+            
+            .nav-links { position: fixed; top: 0; left: 100%; width: 100%; height: 100vh; background: var(--hr-beige); flex-direction: column; justify-content: center; align-items: center; gap: 40px; transition: left 0.4s ease; z-index: 1001; }
+            .nav-links.active { left: 0; }
+            .nav-links li a { font-size: 2rem; }
+            .nav-cta { font-size: 1.1rem !important; padding: 15px 30px !important; }
+            
+            .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+            /* Grid Fixes - Todo a 1 columna */
+            .about-section { grid-template-columns: 1fr; text-align: center; padding: 100px 5% 60px; }
+            .kiosk-section { display: flex; flex-direction: column; }
+            .kiosk-bg-shape { width: 100%; clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%); background: linear-gradient(to bottom, var(--hr-dark-green) 0%, var(--hr-black) 100%);}
+            .kiosk-image-wrapper { width: 100%; margin-left: 0; height: auto; -webkit-mask-image: none; mask-image: none; }
+            .kiosk-image-wrapper img { max-height: 400px; }
+            .kiosk-content { padding: 60px 5%; align-items: center; text-align: center;}
+            .kiosk-list { display: inline-block; text-align: left; }
+            
+            .form-container { grid-template-columns: 1fr; }
+            .form-info, .form-fields { padding: 40px 5%; text-align: center;}
+            .form-info ul { text-align: left; display: inline-block;}
+
+            /* Mascots Adjustments para Tablets */
+            .tuti-walker { width: 100px; left: -10px; top: 100px; }
+            .rollo-image-container { position: relative; top: 0; right: 0; transform: none; max-width: 300px; opacity: 0.3; margin: 0 auto 30px; }
+        }
+
+        /* -------------------------------------------------------------
+           MODIFICACIONES ESPECÍFICAS PARA EL CELULAR (MENOS DE 768px)
+           ------------------------------------------------------------- */
+        @media (max-width: 768px) {
+            
+            .hero-carousel { height: 65svh !important; min-height: auto !important; }
+
+            .stats-bar { 
+                height: 35svh !important; padding: 0 5% !important; gap: 10px 15px !important; 
+                grid-template-columns: 1fr 1fr !important; align-content: center !important; 
+            }
+            .stat-item { padding-left: 10px !important; border-left-width: 3px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
+            .stat-item h3 { font-size: clamp(1.8rem, 6vw, 2.5rem) !important; line-height: 1 !important; }
+            .stat-item p { font-size: clamp(0.65rem, 2.5vw, 0.8rem) !important; margin-top: 4px !important; line-height: 1.2 !important; }
+
+            .tuti-stats { width: 55px !important; top: -25px !important; right: 5% !important; }
+            .tuti-walker { width: 70px !important; top: 220px !important; left: -5px !important; }
+
+            .promo-grid { grid-template-columns: 1fr 1fr !important; gap: 15px !important; padding: 0 5px !important; }
+            .combo-card { border-radius: 10px !important; }
+            .combo-image-wrapper { height: 130px !important; border-top-left-radius: 10px !important; border-top-right-radius: 10px !important; }
+            .combo-price-tag { font-size: 1.3rem !important; padding: 4px 12px !important; border-top-left-radius: 10px !important; }
+            .combo-content { padding: 15px 12px !important; border-bottom-left-radius: 10px !important; border-bottom-right-radius: 10px !important; }
+            .combo-content h3 { font-size: 1.3rem !important; margin-bottom: 6px !important; }
+            .combo-content p { font-size: 0.7rem !important; line-height: 1.3 !important; margin-bottom: 12px !important; }
+            .combo-btn { font-size: 0.85rem !important; padding: 8px !important; letter-spacing: 0.5px !important; }
+
+            .peek-mascot-combo { width: 55px !important; right: 15px !important; }
+            @keyframes peekMobile {
+                0%, 10% { transform: translateY(0) rotate(-10deg); opacity: 0; }
+                20%, 80% { transform: translateY(-45px) rotate(10deg); opacity: 1; }
+                90%, 100% { transform: translateY(0) rotate(-10deg); opacity: 0; }
+            }
+            .combo-card:nth-child(1) .peek-mascot-combo { animation: peekMobile 5s infinite 1s !important; }
+            .combo-card:nth-child(2) .peek-mascot-combo { animation: peekMobile 5s infinite 3.5s !important; }
+
+            .breathing-section { padding: 80px 5% !important; height: 100svh !important; min-height: 100svh !important; }
+
+            .numbers-section { padding: 80px 5% 60px !important; }
+            .numbers-title h2 { font-size: 2.8rem !important; line-height: 1 !important; margin-bottom: 10px !important; }
+            .numbers-title p { font-size: 0.85rem !important; line-height: 1.4 !important; margin-bottom: 30px !important; }
+            .numbers-grid { grid-template-columns: 1fr 1fr !important; gap: 25px 15px !important; margin-bottom: 30px !important; }
+            .num-card { padding: 30px 10px 20px !important; border-width: 3px !important; box-shadow: 5px 5px 0 var(--hr-yellow) !important; border-radius: 15px !important; }
+            .card-badge { font-size: 0.85rem !important; padding: 4px 15px !important; top: -14px !important; }
+            .num-card h3 { font-size: 2.2rem !important; margin: 10px 0 5px !important; }
+            .num-card p { font-size: 0.7rem !important; }
+            .rollo-image-container { position: absolute !important; top: 40% !important; left: 50% !important; transform: translate(-50%, -50%) !important; width: 120% !important; max-width: none !important; opacity: 0.15 !important; z-index: 0 !important; margin: 0 !important; }
+
+            .kiosk-content { padding: 40px 5% 0 !important; }
+            .kiosk-title { font-size: 2.8rem !important; margin-bottom: 5px !important; }
+            .kiosk-subtitle { font-size: 1.3rem !important; margin-bottom: 20px !important; }
+            .kiosk-list { margin-bottom: 0 !important; }
+            .kiosk-list li { margin-bottom: 10px !important; font-size: 0.85rem !important; }
+            .kiosk-image-wrapper { height: auto !important; margin-top: 10px !important; }
+            .kiosk-image-wrapper img { max-height: 220px !important; object-fit: contain !important; margin: 0 auto !important; }
+            .kiosk-footer-text { padding: 20px 5% !important; font-size: 1.5rem !important; }
+            
+            .contact-section { padding: 80px 5% 160px !important; }
+            .form-info { padding: 30px 20px 15px !important; }
+            .form-info h2 { font-size: 2.5rem !important; }
+            .form-info ul { margin-top: 15px !important; font-size: 0.9rem !important; line-height: 1.6 !important; }
+            .form-fields { padding: 0 20px 30px !important; }
+            .form-fields input, .form-fields select, .form-fields textarea { padding: 12px !important; margin-bottom: 12px !important; font-size: 0.9rem !important; }
+            .form-fields textarea#hr-experiencia { height: 70px !important; }
+            .btn-submit { padding: 14px !important; font-size: 1.5rem !important; }
+            .tuti-bubble { right: 5% !important; font-size: 1rem !important; top: -90px !important; padding: 8px 12px !important; }
+            .tuti-mascot-form { right: 10px !important; width: 75px !important; top: -55px !important; }
+
+            .tuti-footer { width: 140px !important; top: -80px !important; }
+
+            .about-deco-mascot { width: 70px; }
+            .mascot-about-top { right: -5px; top: -10px; }
+            .mascot-about-left { left: -5px; bottom: -15px; }
+            .mascot-about-corner { left: -5px; top: -5px; }
+
+            /* Ajuste Botón Idioma Celular */
+            .lang-floating { top: auto; bottom: 20px; left: 20px; right: auto; width: 45px; height: 45px; font-size: 0.8rem; border-width: 2px; }
+            .lang-floating.scrolled { top: auto; bottom: 20px; }
+        }
+
+    </style>
+</head>
+<body class="lang-es">
+
+    <nav id="navbar" class="navbar">
+        <a href="index.html" class="logo" aria-label="Ir al inicio de Mango BC">
+            <div class="nav-logo-wrapper">
+                <img src="mbc.png" alt="Mango BC Logo" class="nav-logo" loading="eager" decoding="async">
+            </div>
+        </a>
+        
+        <a href="#" class="brand-center-logo" aria-label="Inicio Hot Rolls">
+            <img src="logo Hot rolls.png" alt="Hot Rolls" class="brand-logo-img">
+        </a>
+        
+        <div class="hamburger" id="hamburger" role="button" aria-label="Menú de navegación" tabindex="0">
+            <span></span><span></span><span></span>
+        </div>
+        
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#menu" class="nav-item"><span class="es-text">MENÚ</span><span class="en-text">MENU</span></a></li>
+            <li><a href="#promociones" class="nav-item"><span class="es-text">PROMOCIONES</span><span class="en-text">PROMOTIONS</span></a></li>
+            <li><a href="#nosotros" class="nav-item"><span class="es-text">NOSOTROS</span><span class="en-text">ABOUT US</span></a></li>
+            <li><a href="#franquicias" class="nav-item"><span class="es-text">FRANQUICIAS</span><span class="en-text">FRANCHISES</span></a></li>
+            <li><a href="#contacto" class="nav-cta nav-item"><span class="es-text">¡CRÚJELO! 🔥</span><span class="en-text">CRUNCH IT! 🔥</span></a></li>
+        </ul>
+    </nav>
+
+    <button class="lang-floating" id="langToggle" aria-label="Cambiar Idioma">EN</button>
+
+    <section class="hero-carousel">
+        <div class="carousel-track" id="heroTrack">
+            <div class="carousel-slide">
+                <img src="fondo1.jpg" alt="Fondo de la marca Hot Rolls" class="banner-image">
+            </div>
+            <div class="carousel-slide">
+                <img src="fondo2.jpg" alt="Menú de rolls dulces y salados" class="banner-image">
+            </div>
+        </div>
+        <button class="carousel-btn prev" id="btnPrev" aria-label="Slide anterior">&#10094;</button>
+        <button class="carousel-btn next" id="btnNext" aria-label="Siguiente slide">&#10095;</button>
+        <div class="carousel-dots">
+            <span class="dot active" data-index="0" aria-label="Ir al slide 1"></span>
+            <span class="dot" data-index="1" aria-label="Ir al slide 2"></span>
+        </div>
+    </section>
+
+    <section class="stats-bar">
+        <img src="Capa 2.png" alt="Mascota de Hot Rolls sobre la barra de estadísticas" class="tuti-stats">
+        <div class="stat-item">
+            <h3><span class="counter-value" data-target="599000" data-prefix="$">0</span></h3>
+            <p><span class="es-text">Inversión Mínima Kit</span><span class="en-text">Minimum Kit Investment</span></p>
+        </div>
+        <div class="stat-item">
+            <h3><span class="counter-value" data-target="35" data-suffix="%">0</span></h3>
+            <p><span class="es-text">Margen Operativo hasta del</span><span class="en-text">Operating Margin up to</span></p>
+        </div>
+        <div class="stat-item">
+            <h3><span class="counter-value" data-target="12">0</span>-<span class="counter-value" data-target="18">0</span></h3>
+            <p><span class="es-text">Meses de Retorno</span><span class="en-text">Months ROI</span></p>
+        </div>
+        <div class="stat-item">
+            <h3><span class="counter-value" data-target="100" data-suffix="%">0</span></h3>
+            <p><span class="es-text">Sabor y Actitud</span><span class="en-text">Taste and Attitude</span></p>
+        </div>
+    </section>
+
+    <section class="menu-section" id="menu">
+        <img src="Capa 3.png" alt="Mascota de Hot Rolls caminando a lo largo del menú" class="tuti-walker">
+        <div class="menu-header">
+            <h2 class="big-title"><span class="es-text">LOS INEVITABLES<br>DE HOT ROLLS</span><span class="en-text">THE INEVITABLES<br>OF HOT ROLLS</span></h2>
+            <p class="compliance"><span class="es-text">MOCKUPS CON EMPAQUE TRANSPARENTE EN CUMPLIMIENTO CON LA NOM-051.</span><span class="en-text">MOCKUPS WITH TRANSPARENT PACKAGING IN COMPLIANCE WITH NOM-051.</span></p>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-item">
+                <img src="arracheragrill.jpg" alt="Un roll Arrachera Grill" class="main-img" style="mix-blend-mode: multiply; border-radius: 15px;">
+                <h4 class="script-subtitle"><span class="es-text">Directo del asador</span><span class="en-text">Straight from the grill</span></h4> 
+                <h3 class="item-title">ARRACHERA GRILL</h3>
+                <p class="item-desc"><span class="es-text">Jugosa arrachera asada y queso derretido, envueltos en nuestra masa crujiente.</span><span class="en-text">Juicy grilled flank steak and melted cheese, wrapped in our crispy dough.</span></p>
+                <a href="#contacto" class="item-btn"><span class="es-text">¡CRÚJELO!</span><span class="en-text">CRUNCH IT!</span></a>
+            </div>
+            <div class="menu-item">
+                <img src="peperonni1.jpg" alt="Un roll Pizza Pepperoni" class="main-img" style="border-radius: 15px;">
+                <h4 class="script-subtitle"><span class="es-text">El clásico infalible</span><span class="en-text">The infallible classic</span></h4>
+                <h3 class="item-title">PIZZA PEPPERONI</h3>
+                <p class="item-desc"><span class="es-text">Auténtico pepperoni, salsa de pizza y una explosión de queso fundido.</span><span class="en-text">Authentic pepperoni, pizza sauce, and an explosion of melted cheese.</span></p>
+                <a href="#contacto" class="item-btn"><span class="es-text">¡CRÚJELO!</span><span class="en-text">CRUNCH IT!</span></a>
+            </div>
+            <div class="menu-item">
+                <img src="pollotocino.jpg" alt="Un roll Pollo y Bacon" class="main-img" style="border-radius: 15px;">
+                <h4 class="script-subtitle"><span class="es-text">Crujiente y ahumado</span><span class="en-text">Crispy and smoky</span></h4>
+                <h3 class="item-title">POLLO Y BACON</h3>
+                <p class="item-desc"><span class="es-text">Pechuga de pollo, tiras de tocino crujiente y el queso que nunca falla.</span><span class="en-text">Chicken breast, crispy bacon strips, and the cheese that never fails.</span></p>
+                <a href="#contacto" class="item-btn"><span class="es-text">¡CRÚJELO!</span><span class="en-text">CRUNCH IT!</span></a>
+            </div>
+            <div class="menu-item">
+                <img src="quesosyespecias.jpg" alt="Un roll Queso Extremo" class="main-img" style="border-radius: 15px;">
+                <h4 class="script-subtitle"><span class="es-text">Puro sabor derretido</span><span class="en-text">Pure melted flavor</span></h4>
+                <h3 class="item-title"><span class="es-text">QUESO EXTREMO</span><span class="en-text">EXTREME CHEESE</span></h3>
+                <p class="item-desc"><span class="es-text">Nuestra mejor mezcla de quesos derretidos hasta desbordarse. Para los verdaderos fans.</span><span class="en-text">Our best blend of melted cheeses until it overflows. For true fans.</span></p>
+                <a href="#contacto" class="item-btn"><span class="es-text">¡CRÚJELO!</span><span class="en-text">CRUNCH IT!</span></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="promo-section" id="promociones">
+        <div class="promo-header">
+            <h2 class="big-title"><span class="es-text">LOS MEJORES COMBOS</span><span class="en-text">THE BEST COMBOS</span></h2>
+        </div>
+        
+        <div class="promo-grid">
+            <div class="combo-card">
+                <img src="Capa 2.png" alt="Tuti asomándose" class="peek-mascot-combo">
+                <div class="combo-image-wrapper">
+                    <img src="combo1.jpg" alt="Hot Queso">
+                    <div class="combo-price-tag">$129</div>
+                </div>
+                <div class="combo-content">
+                    <h3>HOT QUESO</h3>
+                    <p><span class="es-text">Tu favorito Queso Extremo + Papas chicas + Bebida 355 ml.</span><span class="en-text">Your favorite Extreme Cheese + Small fries + 355 ml Drink.</span></p>
+                    <a href="#contacto" class="combo-btn"><span class="es-text">SOLICITAR COMBO</span><span class="en-text">REQUEST COMBO</span></a>
+                </div>
+            </div>
+            
+            <div class="combo-card">
+                <img src="Capa 2.png" alt="Tuti asomándose" class="peek-mascot-combo">
+                <div class="combo-image-wrapper">
+                    <img src="combo2.jpg" alt="Hot Combo">
+                    <div class="combo-price-tag">$159</div>
+                </div>
+                <div class="combo-content">
+                    <h3>HOT COMBO</h3>
+                    <p><span class="es-text">Elige tu Hot Roll favorito (Pizza Pepperoni o Pollo y Bacon) + Papas chicas + Bebida 355 ml.</span><span class="en-text">Choose your favorite Hot Roll (Pepperoni Pizza or Chicken Bacon) + Small fries + 355 ml Drink.</span></p>
+                    <a href="#contacto" class="combo-btn"><span class="es-text">SOLICITAR COMBO</span><span class="en-text">REQUEST COMBO</span></a>
+                </div>
+            </div>
+
+            <div class="combo-card">
+                <img src="Capa 2.png" alt="Tuti asomándose" class="peek-mascot-combo">
+                <div class="combo-image-wrapper">
+                    <img src="combo3.jpg" alt="Hot Arrachera Deluxe">
+                    <div class="combo-price-tag">$176</div>
+                </div>
+                <div class="combo-content">
+                    <h3>HOT ARRACHERA DELUXE</h3>
+                    <p><span class="es-text">Nuestro Roll de Arrachera Grill con guacamole incluido + Papas chicas + Bebida 355 ml.</span><span class="en-text">Our Arrachera Grill Roll with guacamole included + Small fries + 355 ml Drink.</span></p>
+                    <a href="#contacto" class="combo-btn"><span class="es-text">SOLICITAR COMBO</span><span class="en-text">REQUEST COMBO</span></a>
+                </div>
+            </div>
+
+            <div class="combo-card">
+                <img src="Capa 2.png" alt="Tuti asomándose" class="peek-mascot-combo">
+                <div class="combo-image-wrapper">
+                    <img src="combo4.jpg" alt="Doble Hot">
+                    <div class="combo-price-tag">$299</div>
+                </div>
+                <div class="combo-content">
+                    <h3>DOBLE HOT</h3>
+                    <p><span class="es-text">2 Hot Rolls a elegir + 2 Papas chicas + 2 Bebidas 355 ml.</span><span class="en-text">2 Hot Rolls of your choice + 2 Small fries + 2 Drinks 355 ml.</span></p>
+                    <a href="#contacto" class="combo-btn"><span class="es-text">SOLICITAR COMBO</span><span class="en-text">REQUEST COMBO</span></a>
+                </div>
+            </div>
+
+            <div class="combo-card">
+                <img src="Capa 2.png" alt="Tuti asomándose" class="peek-mascot-combo">
+                <div class="combo-image-wrapper">
+                    <img src="combo5.jpg" alt="Hot Box Mix">
+                    <div class="combo-price-tag">$569</div>
+                </div>
+                <div class="combo-content">
+                    <h3>HOT BOX MIX</h3>
+                    <p><span class="es-text">4 Hot Rolls a elegir (máx. 2 de Arrachera) + 4 Papas chicas + 4 Bebidas 355 ml + 1 Guacamole incluido.</span><span class="en-text">4 Hot Rolls of your choice (max 2 Arrachera) + 4 Small fries + 4 Drinks 355 ml + 1 Guacamole included.</span></p>
+                    <a href="#contacto" class="combo-btn"><span class="es-text">SOLICITAR COMBO</span><span class="en-text">REQUEST COMBO</span></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section" id="nosotros">
+        <div class="about-text">
+            <h2 class="big-title"><span class="es-text">LA REVOLUCIÓN<br>DEL FAST FOOD</span><span class="en-text">THE FAST FOOD<br>REVOLUTION</span></h2>
+            <p><span class="es-text">Hot Roll's no entra a competir. Entra a cambiar las reglas. Somos el primer roll caliente premium diseñado para venderse en volumen. Lo entiendes en segundos. Se vende en minutos.</span><span class="en-text">Hot Roll's doesn't come to compete. It comes to change the rules. We are the first premium hot roll designed to sell in volume. You understand it in seconds. It sells in minutes.</span></p>
+            <p><span class="es-text">Rollos calientes, crujientes por fuera, irresistibles por dentro. Rellenos con proteínas, quesos derretidos y salsas hechas como en casa, para antojo inmediato. Un producto pensado para alta rotación, recompra constante y escalabilidad.</span><span class="en-text">Hot rolls, crispy on the outside, irresistible on the inside. Filled with proteins, melted cheeses, and homemade sauces, for immediate cravings. A product designed for high rotation, constant repurchase, and scalability.</span> <span class="highlight"><span class="es-text">¡CRÚJELO!</span><span class="en-text">CRUNCH IT!</span></span></p>
+        </div>
+        <div class="about-image-wrapper">
+            <img src="Capa 2.png" alt="Tuti asomándose como sticker" class="about-deco-mascot mascot-about-top">
+            <img src="Capa 3.png" alt="Tuti caminando como sticker" class="about-deco-mascot mascot-about-left">
+            <img src="Capa 1.png" alt="Tuti volando como sticker" class="about-deco-mascot mascot-about-corner">
+            
+            <img src="nosotros.jpg" alt="Equipo trabajando en Hot Rolls" class="about-img">
+        </div>
+    </section>
+
+    <section class="breathing-section">
+        <div class="floating-items">
+            <img src="Capa 1.png" alt="La mascota de Hot Rolls volando en la sección de respiro" class="float-tuti">
+            <img src="peperon.png" alt="Ingredientes frescos flotando" class="float-ing-1">
+            <img src="queso.png" alt="Ingredientes frescos flotando" class="float-ing-2">
+            <img src="jalapeño.png" alt="Ingredientes frescos flotando" class="float-ing-3">
+        </div>
+        <div class="breathing-text">
+            <h2>
+                <span class="es-text">AQUÍ NO VIENES A INVENTAR.<br><span class="text-black">VIENES A MULTIPLICAR.</span></span>
+                <span class="en-text">YOU DIDN'T COME TO INVENT.<br><span class="text-black">YOU CAME TO MULTIPLY.</span></span>
+            </h2>
+            <p><span class="es-text">OPERADORES CON MENTALIDAD DE CRECIMIENTO</span><span class="en-text">OPERATORS WITH A GROWTH MINDSET</span></p>
+        </div>
+    </section>
+
+    <section class="numbers-section" id="franquicias">
+        <div class="rollo-image-container">
+            <img src="roll.png" alt="La mascota de Hot Rolls flotando">
+        </div>
+
+        <div class="numbers-title">
+            <h2><span class="es-text">NÚMEROS QUE HABLAN</span><span class="en-text">NUMBERS THAT SPEAK</span></h2>
+            <p><span class="es-text">UN MODELO DISEÑADO PARA PRODUCIR DESDE EL PRIMER DÍA</span><span class="en-text">A MODEL DESIGNED TO PRODUCE FROM DAY ONE</span></p>
+        </div>
+        
+        <div class="numbers-grid">
+            <div class="num-card">
+                <div class="card-badge"><span class="es-text">OPERACIÓN</span><span class="en-text">OPERATION</span></div>
+                <h3><span class="counter-value" data-target="3" data-suffix-es=" MIN" data-suffix-en=" MIN">0</span></h3>
+                <p><span class="es-text">TIEMPO POR ORDEN</span><span class="en-text">TIME PER ORDER</span></p>
+            </div>
+            <div class="num-card">
+                <div class="card-badge"><span class="es-text">VOLUMEN</span><span class="en-text">VOLUME</span></div>
+                <h3><span class="counter-value" data-target="150" data-suffix-es="+" data-suffix-en="+">0</span></h3>
+                <p><span class="es-text">TICKETS POR DÍA</span><span class="en-text">TICKETS PER DAY</span></p>
+            </div>
+            <div class="num-card">
+                <div class="card-badge"><span class="es-text">VELOCIDAD</span><span class="en-text">SPEED</span></div>
+                <h3><span class="counter-value" data-target="5" data-suffix-es=" DÍAS" data-suffix-en=" DAYS">0</span></h3>
+                <p><span class="es-text">DE INSTALACIÓN</span><span class="en-text">TO INSTALL</span></p>
+            </div>
+            <div class="num-card">
+                <div class="card-badge"><span class="es-text">ESPACIO</span><span class="en-text">SPACE</span></div>
+                <h3><span class="counter-value" data-target="4" data-suffix-es=" m²" data-suffix-en=" m²">0</span></h3>
+                <p><span class="es-text">FORMATO MÍNIMO</span><span class="en-text">MINIMUM FORMAT</span></p>
+            </div>
+            <div class="num-card">
+                <div class="card-badge"><span class="es-text">RENTABILIDAD</span><span class="en-text">PROFITABILITY</span></div>
+                <h3><span class="counter-value" data-target="139" data-prefix="$">0</span></h3>
+                <p><span class="es-text">TICKET PROMEDIO</span><span class="en-text">AVERAGE TICKET</span></p>
+            </div>
+            <div class="num-card">
+                <div class="card-badge"><span class="es-text">INVERSIÓN</span><span class="en-text">INVESTMENT</span></div>
+                <h3><span class="counter-value" data-target="35" data-suffix-es="%" data-suffix-en="%">0</span></h3>
+                <p><span class="es-text">MARGEN OPERATIVO</span><span class="en-text">OPERATING MARGIN</span></p>
+            </div>
+        </div>
+
+        <div class="numbers-subtext">
+            <p><span class="es-text">Formatos desde 4 m²<br>Alta recompra y rotación constante</span><span class="en-text">Formats starting at 4 m²<br>High repurchase and constant rotation</span></p>
+        </div>
+    </section>
+
+    <section class="kiosk-section">
+        <div class="kiosk-bg-shape"></div>
+        
+        <div class="kiosk-content">
+            <h2 class="kiosk-title">Sistema Plug <span class="ampersand">&</span> Play</h2>
+            <div class="kiosk-subtitle">
+                <span class="es-text">HOT ROLL'S ELIMINA TODAS LAS BARRERAS.</span><span class="en-text">HOT ROLL'S ELIMINATES ALL BARRIERS.</span>
+            </div>
+            
+            <p style="font-family: 'Lexend', sans-serif; font-size: 1.1rem; margin-bottom: 25px; line-height: 1.5; font-weight: 300; color: #EEE;">
+                <span class="es-text">Abriendo aún más la oferta de espacios en cualquier sitio comercial o de alto flujo.</span><span class="en-text">Opening even more space offerings in any commercial or high-traffic site.</span>
+            </p>
+            
+            <div style="background-color: var(--hr-orange); color: var(--hr-white); padding: 12px 20px; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 1px; display: inline-block; margin-bottom: 25px; border: 3px solid var(--hr-black); box-shadow: 4px 4px 0 var(--hr-yellow); transform: rotate(-1deg);">
+                <span class="es-text">⚡ SIN GAS • 🚫 SIN DRENAJE • 🔌 100% ELÉCTRICO</span><span class="en-text">⚡ NO GAS • 🚫 NO DRAINAGE • 🔌 100% ELECTRIC</span>
+            </div>
+
+            <ul class="kiosk-list">
+                <li><span class="es-text">KIOSKO COMPLETAMENTE CONSTRUIDO</span><span class="en-text">FULLY BUILT KIOSK</span></li>
+                <li><span class="es-text">SISTEMA PUNTO DE VENTA E INVENTARIO</span><span class="en-text">POS AND INVENTORY SYSTEM</span></li>
+                <li><span class="es-text">CAPACITACIÓN HOT ROLL'S ACADEMY</span><span class="en-text">HOT ROLL'S ACADEMY TRAINING</span></li>
+            </ul>
+        </div>
+
+        <div class="kiosk-image-wrapper">
+            <img src="kiosko.png" alt="Un kiosko de Hot Rolls en una plaza comercial"> 
+        </div>
+
+        <div class="kiosk-footer-text">
+            <span class="es-text">NO ES SOLO UN KIOSKO. ES UN <span>SISTEMA DISEÑADO PARA OPERAR POR SÍ MISMO.</span></span>
+            <span class="en-text">IT'S NOT JUST A KIOSK. IT'S A <span>SYSTEM DESIGNED TO OPERATE ON ITS OWN.</span></span>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contacto">
+        <div class="form-wrapper">
+            <div class="tuti-bubble"><span class="es-text">¡Ey! Date un Roll.</span><span class="en-text">Hey! Take a Roll.</span></div>
+            <img src="Capa 1.png" alt="La mascota de Hot Rolls volando en la sección de contacto" class="tuti-mascot-form">
+            <div class="form-container">
+                <div class="form-info">
+                    <h2 class="big-title">LET'S ROLL<br>THE CITY</h2>
+                    <p style="font-family: 'Lexend'; margin-top: 15px; font-size: 1.1rem; color: #333;"><span class="es-text">Hot Roll's no es una franquicia más. Es un sistema diseñado para replicarse y escalar sin perder control.</span><span class="en-text">Hot Roll's is not just another franchise. It is a system designed to replicate and scale without losing control.</span></p>
+                    <ul>
+                        <li><span class="es-text">✓ Ubicaciones disponibles limitadas</span><span class="en-text">✓ Limited locations available</span></li>
+                        <li><span class="es-text">✓ No necesitas experiencia en restaurantes</span><span class="en-text">✓ No restaurant experience needed</span></li>
+                        <li><span class="es-text">✓ Necesitas disciplina para ejecutar un sistema</span><span class="en-text">✓ You need discipline to execute a system</span></li>
+                    </ul>
+                </div>
+                <div class="form-fields">
+                    <form id="contact-form">
+                        <input type="text" id="hr-nombre" class="lang-input" data-es-placeholder="Nombre completo" data-en-placeholder="Full name" placeholder="Nombre completo" required>
+                        <input type="email" id="hr-email" class="lang-input" data-es-placeholder="Correo electrónico" data-en-placeholder="Email address" placeholder="Correo electrónico" required>
+                        <input type="tel" id="hr-telefono" class="lang-input" data-es-placeholder="Teléfono / WhatsApp" data-en-placeholder="Phone / WhatsApp" placeholder="Teléfono / WhatsApp" required>
+                        <select id="hr-ciudad" required>
+                            <option value="" disabled selected class="lang-option" data-es="Ciudad de interés" data-en="City of interest">Ciudad de interés</option>
+                            <option value="CDMX" class="lang-option" data-es="Ciudad de México" data-en="Mexico City">Ciudad de México</option>
+                            <option value="Michoacán">Michoacán</option>
+                            <option value="Jalisco">Jalisco</option>
+                            <option value="Otra" class="lang-option" data-es="Otra ubicación" data-en="Other location">Otra ubicación</option>
+                        </select>
+                        <textarea id="hr-experiencia" class="lang-input" data-es-placeholder="Cuéntanos un poco sobre tu experiencia comercial" data-en-placeholder="Tell us a bit about your commercial experience" placeholder="Cuéntanos un poco sobre tu experiencia comercial" style="height: 100px; resize: none;"></textarea>
+                        <button type="submit" class="btn-submit" id="hr-submit-btn"><span class="es-text">ENVIAR SOLICITUD</span><span class="en-text">SEND APPLICATION</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <img src="Capa 5.png" alt="La mascota de Hot Rolls flotando sobre el footer" class="tuti-footer" style="position: absolute; left: 50%; top: -100px; transform: translateX(-50%); width: 180px; z-index: 5; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));">
+        
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo" style="margin-bottom: 20px;">
+                    <img src="Logos Vectorizados.png" alt="Logo de Mango BC" style="height: 50px; width: auto; filter: brightness(0) invert(1);" loading="lazy" decoding="async">
+                </div>
+                <p style="color: #888; font-size: 0.9rem; line-height: 1.6; font-family: 'Open Sans', sans-serif;">Morelia, Michoacán<br><span class="es-text">México</span><span class="en-text">Mexico</span>, CP 58000<br>+52 443 332 7430</p>
+            </div>
+            <div class="footer-col">
+                <h4 style="color: var(--mango); font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; font-weight: 700;"><span class="es-text">Contacto Directo</span><span class="en-text">Direct Contact</span></h4>
+                <a href="mailto:socios@mangobusiness.com" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;"><span class="es-text">Ventas y Socios</span><span class="en-text">Sales & Partners</span></a>
+                <a href="mailto:talento@mangobusiness.com" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;"><span class="es-text">Atracción de Talento</span><span class="en-text">Talent Acquisition</span></a>
+                <a href="mailto:compras@mangobusiness.com" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;"><span class="es-text">Proveedores y Compras</span><span class="en-text">Suppliers & Purchasing</span></a>
+            </div>
+            <div class="footer-col">
+                <h4 style="color: var(--mango); font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; font-weight: 700;"><span class="es-text">Redes Sociales</span><span class="en-text">Social Media</span></h4>
+                <a href="https://www.linkedin.com/company/mango-business-center" target="_blank" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;" rel="noopener">LinkedIn</a>
+                <a href="https://www.instagram.com/mangobusinesscenter" target="_blank" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;" rel="noopener">Instagram</a>
+                <a href="https://www.facebook.com/mangobusinesscenter" target="_blank" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;" rel="noopener">Facebook</a>
+            </div>
+        </div>
+        <div class="footer-bottom" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; padding-top: 30px; color: #666; font-size: 0.8rem; font-family: 'Open Sans', sans-serif;">
+            © 2026 MANGO BUSINESS CENTER
+        </div>
+    </footer>
+
+    <script>
+        // LÓGICA DE BILINGÜE
+        const langToggle = document.getElementById('langToggle');
+        if(langToggle) {
+            // Detección automática según el navegador
+            const userLang = navigator.language || navigator.userLanguage; 
+            let currentLang = userLang.toLowerCase().startsWith('es') ? 'es' : 'en';
+
+            // Setear estado inicial
+            document.body.className = 'lang-' + currentLang;
+            langToggle.innerText = currentLang === 'es' ? 'EN' : 'ES';
+            document.documentElement.lang = currentLang;
+
+            // Función para actualizar textos dinámicos (Placeholders y Options)
+            function updateDynamicTexts() {
+                // Placeholders de Inputs/Textareas
+                const langInputs = document.querySelectorAll('.lang-input');
+                langInputs.forEach(input => {
+                    input.placeholder = currentLang === 'en' ? input.getAttribute('data-en-placeholder') : input.getAttribute('data-es-placeholder');
+                });
+                
+                // Opciones del Select
+                const langOptions = document.querySelectorAll('.lang-option');
+                langOptions.forEach(opt => {
+                    opt.text = currentLang === 'en' ? opt.getAttribute('data-en') : opt.getAttribute('data-es');
+                });
+                
+                // Actualizar los contadores que usan el data-suffix bilingüe
+                const counters = document.querySelectorAll('.counter-value');
+                counters.forEach(counter => {
+                    const isEn = currentLang === 'en';
+                    const suffix = isEn ? (counter.getAttribute('data-suffix-en') || counter.getAttribute('data-suffix') || '') : (counter.getAttribute('data-suffix-es') || counter.getAttribute('data-suffix') || '');
+                    const prefix = counter.getAttribute('data-prefix') || '';
+                    const target = counter.getAttribute('data-target');
+                    
+                    // Si el contador ya terminó (tiene clase 'finished'), actualizamos su texto completo
+                    if (counter.classList.contains('finished')) {
+                        counter.innerText = prefix + formatNumber(target) + suffix;
+                    }
+                });
+            }
+            
+            updateDynamicTexts();
+
+            // Comportamiento del botón manual
+            langToggle.addEventListener('click', () => {
+                document.body.classList.remove('lang-' + currentLang);
+                currentLang = currentLang === 'es' ? 'en' : 'es';
+                document.body.classList.add('lang-' + currentLang);
+                langToggle.innerText = currentLang === 'es' ? 'EN' : 'ES';
+                document.documentElement.lang = currentLang;
+                updateDynamicTexts();
+            });
+        }
+
+        // Lógica Navbar Scrolled
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                if(langToggle) langToggle.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+                if(langToggle) langToggle.classList.remove('scrolled');
+            }
+        });
+
+        // Menú Hamburguesa
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : 'auto';
+        });
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+        });
+
+        // Lógica Carrusel
+        const track = document.getElementById('heroTrack');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        const dots = document.querySelectorAll('.dot');
+        const slides = document.querySelectorAll('.carousel-slide');
+        
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+        let slideInterval;
+
+        function updateCarousel(index) {
+            track.style.transform = `translateX(-${index * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[index].classList.add('active');
+            currentIndex = index;
+        }
+
+        function nextSlide() {
+            let nextIndex = (currentIndex === totalSlides - 1) ? 0 : currentIndex + 1;
+            updateCarousel(nextIndex);
+        }
+
+        function prevSlide() {
+            let prevIndex = (currentIndex === 0) ? totalSlides - 1 : currentIndex - 1;
+            updateCarousel(prevIndex);
+        }
+
+        btnNext.addEventListener('click', () => {
+            nextSlide();
+            resetInterval();
+        });
+
+        btnPrev.addEventListener('click', () => {
+            prevSlide();
+            resetInterval();
+        });
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                updateCarousel(index);
+                resetInterval();
+            });
+        });
+
+        function startInterval() {
+            slideInterval = setInterval(nextSlide, 4000); 
+        }
+
+        function resetInterval() {
+            clearInterval(slideInterval);
+            startInterval();
+        }
+
+        startInterval();
+
+        // LÓGICA DE CONTADORES ANIMADOS
+        const counters = document.querySelectorAll('.counter-value');
+        
+        // Función para ponerle comas a los miles (ej: 4400 -> 4,400)
+        const formatNumber = (num) => {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        };
+
+        const counterObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = +counter.getAttribute('data-target');
+                    const prefix = counter.getAttribute('data-prefix') || '';
+                    
+                    const isEn = document.body.classList.contains('lang-en');
+                    const suffix = isEn ? (counter.getAttribute('data-suffix-en') || counter.getAttribute('data-suffix') || '') : (counter.getAttribute('data-suffix-es') || counter.getAttribute('data-suffix') || '');
+                    
+                    const duration = 4000; 
+                    
+                    if (target === 0) {
+                        counter.innerText = prefix + "0" + suffix;
+                        counter.classList.add('finished');
+                        observer.unobserve(counter);
+                        return;
+                    }
+
+                    const step = target / (duration / 16); 
+                    let current = 0;
+
+                    const updateCounter = () => {
+                        current += step;
+                        if (current < target) {
+                            counter.innerText = prefix + formatNumber(Math.ceil(current)) + suffix;
+                            requestAnimationFrame(updateCounter);
+                        } else {
+                            counter.innerText = prefix + formatNumber(target) + suffix;
+                            counter.classList.add('finished');
+                        }
+                    };
+                    
+                    updateCounter();
+                    observer.unobserve(counter); 
+                }
+            });
+        }, {
+            threshold: 0.5 
+        });
+
+        counters.forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // LÓGICA ENVÍO FORMULARIO A WHATSAPP
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const btn = document.getElementById('hr-submit-btn');
+                const isEn = document.body.classList.contains('lang-en');
+                
+                btn.innerHTML = isEn ? '<span class="en-text">SENDING...</span>' : '<span class="es-text">ENVIANDO...</span>';
+                btn.style.opacity = "0.7";
+                
+                // Obtener valores de los campos
+                const nombre = document.getElementById('hr-nombre').value;
+                const email = document.getElementById('hr-email').value;
+                const telefono = document.getElementById('hr-telefono').value;
+                const ciudad = document.getElementById('hr-ciudad').value;
+                const experiencia = document.getElementById('hr-experiencia').value || (isEn ? 'Not specified' : 'No especificada');
+                
+                // Armar el mensaje
+                const mensaje = `¡Hola! Me interesa obtener una franquicia de Hot Rolls. Mis datos son:\n\n*Nombre:* ${nombre}\n*Correo:* ${email}\n*Teléfono:* ${telefono}\n*Ciudad:* ${ciudad}\n*Experiencia:* ${experiencia}`;
+                
+                setTimeout(() => {
+                    const whatsappUrl = `https://api.whatsapp.com/send?phone=5214433327430&text=${encodeURIComponent(mensaje)}`;
+                    window.open(whatsappUrl, '_blank');
+                    
+                    this.reset();
+                    btn.innerHTML = isEn ? '<span class="en-text">SEND APPLICATION</span>' : '<span class="es-text">ENVIAR SOLICITUD</span>';
+                    btn.style.opacity = "1";
+                }, 500);
+            });
+        }
+    </script>
+</body>
+</html>

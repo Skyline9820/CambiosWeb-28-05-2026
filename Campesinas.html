@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campesinas | Tradición, Fibra y Sabor</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* IMPORTACIÓN DE LA NUEVA FUENTE RUBERY */
+        @font-face {
+            font-family: 'Rubery';
+            src: url('rubery.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            /* Paleta Premium Campesinas */
+            --c-cacao: #2A1A10;      
+            --c-brand-dark: #632800; 
+            --c-oro: #C58C46;        
+            --c-crema: #FBF9F6;      
+            --c-blanco: #FFFFFF;
+
+            /* COLORES MANGO (Para el Footer) */
+            --mango: #fdea14;
+            --dark: #1C1C1C;
+            --white: #FFFFFF;
+            
+            /* Sombras sutiles */
+            --shadow-soft: 0 10px 20px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --shadow-float: 0 30px 60px rgba(0, 0, 0, 0.12);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        img { max-width: 100%; height: auto; display: block; }
+        
+        body, html {
+            background-color: var(--c-crema);
+            color: var(--c-cacao);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        ::selection { background: var(--c-oro); color: var(--c-blanco); }
+
+        /* =========================================
+           SISTEMA BILINGÜE
+           ========================================= */
+        body.lang-es .en-text { display: none !important; }
+        body.lang-es .es-text { display: inline !important; }
+        body.lang-en .es-text { display: none !important; }
+        body.lang-en .en-text { display: inline !important; }
+
+        .tv-wrapper {
+            width: 100%; 
+            position: relative;
+            background: var(--c-crema); 
+        }
+
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999; opacity: 0.035;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');
+        }
+
+        /* Aplicando Rubery a los encabezados */
+        h1, h2, h3, h4, .serif { font-family: 'Rubery', serif; }
+
+        /* =========================================
+           NAVBAR ESTRUCTURA MAESTRA (Estilo Campesinas)
+           ========================================= */
+        .navbar {
+            position: fixed;
+            top: 25px; 
+            left: 50%;
+            transform: translateX(-50%); 
+            width: 95%;
+            max-width: 1400px;
+            padding: 10px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10000;
+            background: rgba(251, 249, 246, 0.75);
+            backdrop-filter: blur(25px) saturate(1.2);
+            border-radius: 50px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            transition: all 0.4s ease;
+            border: 1px solid rgba(197, 140, 70, 0.15);
+        }
+
+        .navbar.scrolled {
+            top: 15px;
+            padding: 8px 30px;
+            background: rgba(251, 249, 246, 0.95);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08); 
+        }
+        
+        .navbar.hidden { transform: translate(-50%, -150%); }
+
+        /* 1. IZQUIERDA: Logo Mango BC */
+        .logo { text-decoration: none; display: flex; align-items: center; z-index: 1002; transition: transform 0.3s; }
+        .logo:hover { transform: scale(1.05) translateY(-2px); }
+        .nav-logo-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            padding: 2px 0;
+        }
+        
+        .nav-logo { height: 32px !important; width: auto !important; display: block; object-fit: contain; }
+
+        /* 2. CENTRO: Logo Marca (Campesinas) */
+        .brand-center-logo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .brand-center-logo:hover {
+            transform: translateX(-50%) scale(1.08) translateY(-2px);
+            filter: drop-shadow(0 5px 15px rgba(197,140,70,0.2));
+        }
+        .brand-logo-img {
+            height: 40px; 
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* 3. DERECHA: Enlaces y CTA */
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px; 
+            align-items: center;
+            margin: 0;
+            z-index: 1001;
+        }
+        .nav-links li a {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--c-cacao);
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .nav-links li a:hover { color: var(--c-oro); transform: translateY(-2px); display: inline-block;}
+
+        .nav-cta {
+            background: var(--c-cacao) !important; 
+            color: var(--c-blanco) !important;
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 0.8rem !important;
+            padding: 12px 28px !important;
+            border-radius: 50px; 
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+            border: 1px solid var(--c-cacao);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-cta::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0%; height: 100%;
+            background: var(--c-oro); transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); z-index: -1;
+        }
+        .nav-cta:hover::before { width: 100%; }
+        
+        .nav-cta:hover {
+            color: var(--c-blanco) !important;
+            border-color: var(--c-oro);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* BOTÓN DE IDIOMA FLOTANTE (ESTILO CAMPESINAS) */
+        .lang-floating {
+            position: fixed; top: 26px; right: 2.5%;
+            background: rgba(251, 249, 246, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 2px solid var(--c-cacao); color: var(--c-cacao);
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: 0.85rem;
+            z-index: 10001; transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), background 0.3s, color 0.3s, box-shadow 0.3s, top 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .lang-floating:hover {
+            background: var(--c-cacao); color: var(--c-oro);
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(42, 26, 16, 0.2);
+            border-color: var(--c-oro);
+        }
+        .lang-floating.scrolled {
+            top: 15px;
+        }
+        .lang-floating.hidden { transform: translateY(-150px); }
+
+        /* HAMBURGUESA */
+        .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; z-index: 1002; padding: 10px;}
+        .hamburger span { width: 30px; height: 3px; background-color: var(--c-cacao); border-radius: 3px; transition: transform 0.4s, opacity 0.4s; }
+
+        @media (max-width: 992px) {
+            .navbar { width: 100%; top: 0; border-radius: 0; padding: 15px 5%; border: none; border-bottom: 1px solid rgba(197, 140, 70, 0.2); }
+            .navbar.scrolled { top: 0; }
+            .hamburger { display: flex; }
+            .brand-logo-img { height: 35px; }
+            .nav-logo { height: 26px !important; } 
+            
+            .nav-links { position: fixed; top: 0; left: 100%; width: 100%; height: 100vh; background: var(--c-crema); flex-direction: column; justify-content: center; align-items: center; gap: 40px; transition: left 0.4s ease; z-index: 1001; }
+            .nav-links.active { left: 0; }
+            .nav-links li a { font-size: 1.5rem; }
+            .nav-cta { font-size: 1rem !important; padding: 15px 30px !important; }
+            
+            .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+        }
+
+        /* =========================================
+           HERO CINEMÁTICO
+           ========================================= */
+        .hero {
+            min-height: 100vh; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            align-items: center; 
+            gap: 4vw; 
+            padding: 140px 6% 60px; 
+            position: relative;
+        }
+        .hero-content { z-index: 10; position: relative; max-width: 680px; }
+        .eyebrow {
+            font-size: clamp(0.75rem, 1vw, 0.9rem); font-weight: 600; color: var(--c-oro);
+            text-transform: uppercase; letter-spacing: 4px; display: block; margin-bottom: 25px;
+            position: relative; padding-left: 55px;
+        }
+        .eyebrow::before { content: ''; position: absolute; left: 0; top: 50%; width: 40px; height: 1px; background: var(--c-oro); }
+        
+        .section-header .eyebrow, .cta-text .eyebrow { padding-left: 0; }
+        .section-header .eyebrow::before, .cta-text .eyebrow::before { display: none; }
+
+        .hero h1 {
+            font-size: clamp(3.8rem, 7.5vw, 7rem); line-height: 0.92; font-weight: normal; 
+            margin-bottom: 30px; letter-spacing: -2px; color: var(--c-cacao);
+        }
+        .hero h1 span { color: var(--c-oro); }
+        .hero p {
+            font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.8; color: #5a4639;
+            margin-bottom: 45px; font-weight: 300; opacity: 0.9;
+        }
+        
+        .hero-image-wrapper { position: relative; width: 100%; height: 75vh; z-index: 20; }
+        .hero-img-container {
+            width: 100%; height: 100%; overflow: hidden; border-radius: 24px; 
+            box-shadow: var(--shadow-hover); position: relative;
+        }
+        .img-main {
+            width: 100%; height: 100%; object-fit: cover; object-position: center;
+            filter: saturate(1.1) brightness(0.95);
+        }
+        
+        .badge-artesanal {
+            position: absolute; top: 20px; left: -70px; z-index: 30;
+            background: var(--c-oro); color: var(--white); width: 180px; height: 180px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            text-align: center; font-family: 'Rubery', serif; font-size: 2rem; line-height: 1.05;
+            font-weight: normal; box-shadow: 0 25px 50px rgba(197, 140, 70, 0.4); 
+            animation: spinSlow 30s linear infinite; border: 12px solid var(--c-crema); 
+        }
+        @keyframes spinSlow { 100% { transform: rotate(360deg); } }
+
+        /* MARQUESINA */
+        .marquee-elegant {
+            background: var(--c-cacao); padding: 30px 0; overflow: hidden; position: relative;
+            display: flex; align-items: center; border-top: 1px solid rgba(197,140,70,0.3); border-bottom: 1px solid rgba(197,140,70,0.3);
+        }
+        .marquee-content { display: flex; white-space: nowrap; animation: scrollMarquee 35s linear infinite; }
+        .marquee-text {
+            font-family: 'Rubery', serif; font-size: 3rem; font-weight: normal;
+            color: transparent; -webkit-text-stroke: 1px rgba(253, 251, 248, 0.4); padding: 0 40px;
+            text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: default;
+        }
+        .marquee-elegant:hover .marquee-text { -webkit-text-stroke: 1px var(--c-oro); color: var(--c-oro); text-shadow: 0 0 20px rgba(197,140,70,0.2); }
+        @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- SECCIÓN SCROLLYTELLING PREMIUM --- */
+        .scrollytelling-section {
+            height: 100vh;
+            width: 100%;
+            background: radial-gradient(circle, var(--c-blanco) 0%, #fdfaf4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-top: 1px solid rgba(0,0,0,0.03);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .scroll-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scroll-text-block {
+            position: absolute;
+            width: 350px;
+            opacity: 0;
+            z-index: 20;
+            top: 45%;
+            transform: translateY(-50%);
+        }
+        
+        .scroll-text-left { left: 8%; text-align: right; }
+        .scroll-text-right { right: 8%; text-align: left; }
+        
+        .scroll-text-block h3 {
+            font-family: 'Rubery', serif;
+            font-size: 2.8rem;
+            color: var(--c-oro);
+            margin-bottom: 15px;
+            font-weight: normal;
+        }
+        
+        .scroll-text-block p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--c-cacao);
+            font-weight: 300;
+        }
+
+        .scroll-image {
+            position: absolute;
+            will-change: transform, opacity;
+            z-index: 5;
+        }
+
+        .cookie-scroll {
+            width: 320px;
+            z-index: 10;
+            filter: drop-shadow(0 20px 30px rgba(42, 26, 16, 0.15));
+        }
+
+        .ing-scroll {
+            width: 100px;
+        }
+
+        /* --- BENTO GRID ARREGLADO Y MÁS COMPACTO --- */
+        .section-padding { padding: 100px 6%; } 
+        .section-header { text-align: center; margin-bottom: 60px; max-width: 800px; margin-inline: auto; } 
+        .section-header h2 { font-size: clamp(2.8rem, 4vw, 4.5rem); font-weight: normal; line-height: 1.05; margin-top: 15px; }
+
+        .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 35px; max-width: 1200px; margin: 0 auto; }
+        
+        .bento-card {
+            background: var(--c-blanco); 
+            padding: 60px 50px; 
+            min-height: 280px; 
+            border-radius: 20px; 
+            box-shadow: var(--shadow-soft); transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative; overflow: hidden; border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: center;
+        }
+        .bento-card::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
+            background: var(--c-oro); transform: scaleX(0); transform-origin: right; transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .bento-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-hover); border-color: rgba(197, 140, 70, 0.15); }
+        .bento-card:hover::after { transform: scaleX(1); transform-origin: left; }
+        
+        .bento-card h3 { font-size: 2rem; margin-bottom: 15px; color: var(--c-brand-dark); font-weight: normal; font-family: 'Rubery', serif; } 
+        .bento-card p { font-size: 1rem; line-height: 1.6; color: #5a4639; font-weight: 300; position: relative; z-index: 2;}
+        
+        .card-large { grid-column: span 2; background: var(--c-cacao); color: var(--c-crema); }
+        .card-large h3 { color: var(--c-oro); font-size: 3.2rem; }
+        .card-large p { color: rgba(255,255,255,0.75); font-size: 1.15rem; max-width: 90%; }
+
+        /* PRODUCTOS */
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 70px 40px;
+            max-width: 1400px; margin: 0 auto;
+        }
+        .product-card { text-align: center; position: relative; perspective: 1000px; }
+        .img-wrapper {
+            background: var(--c-blanco); border-radius: 20px; padding: 40px; margin-bottom: 35px;
+            position: relative; transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden; border: 1px solid rgba(0,0,0,0.02);
+            height: 380px; display: flex; align-items: center; justify-content: center;
+        }
+        .img-wrapper::before {
+            content: ''; position: absolute; inset: 0; background: #fdfaf4; transform: scale(0.9); opacity: 0;
+            transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1); border-radius: 20px; z-index: 1;
+        }
+        .product-card:hover .img-wrapper { 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px); border-color: rgba(197, 140, 70, 0.2); 
+        }
+        .product-card:hover .img-wrapper::before { transform: scale(1); opacity: 1; }
+        
+        .product-card img {
+            width: 100%; max-width: 220px; max-height: 240px; object-fit: contain; margin: 0 auto; 
+            transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.08)); 
+            position: relative; z-index: 2;
+        }
+        .product-card:hover img { transform: translateY(-25px) scale(1.08); filter: drop-shadow(0 20px 25px rgba(0,0,0,0.15)); }
+        
+        .hover-cta {
+            position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
+            background: var(--c-oro); color: var(--white); padding: 14px 28px; border-radius: 50px; 
+            font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            opacity: 0; transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); z-index: 3;
+            white-space: nowrap; font-family: 'Montserrat'; text-decoration: none; box-shadow: 0 10px 20px rgba(197,140,70,0.3);
+        }
+        .product-card:hover .hover-cta { opacity: 1; bottom: 35px; color: var(--white); }
+
+        .product-card h4 { font-size: 2.2rem; margin-bottom: 15px; font-weight: normal; color: var(--c-cacao); font-family: 'Rubery', serif; }
+        .product-card p { font-size: 1rem; color: #5a4639; margin-bottom: 25px; line-height: 1.6; font-weight: 300; min-height: 75px; }
+
+        /* DISTRIBUIDORES Y FORMULARIO */
+        .cta-section { background: var(--c-cacao); color: var(--c-crema); position: relative; overflow: hidden; padding: 120px 6%; }
+        .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; max-width: 1300px; margin: 0 auto; }
+        .cta-text h2 { font-size: clamp(3.2rem, 5vw, 4.8rem); line-height: 1.05; margin-bottom: 30px; color: var(--c-blanco); font-family: 'Rubery', serif; font-weight: normal;}
+        .cta-text span { color: var(--c-oro); }
+        .cta-text p { font-size: 1.15rem; line-height: 1.8; opacity: 0.8; margin-bottom: 40px; font-weight: 300; }
+        
+        .check-list { list-style: none; }
+        .check-list li { margin-bottom: 20px; display: flex; align-items: flex-start; font-size: 1.05rem; font-weight: 300; opacity: 0.9; }
+        .check-list li::before { content: '✦'; color: var(--c-oro); margin-right: 15px; font-size: 1.2rem; text-shadow: 0 0 10px rgba(197,140,70,0.5); }
+
+        .form-container { background: var(--c-blanco); padding: 70px 60px; border-radius: 24px; position: relative; box-shadow: var(--shadow-float); }
+        .form-container h3 { color: var(--c-cacao); font-size: 2.5rem; margin-bottom: 40px; text-align: center; font-family: 'Rubery', serif; font-weight: normal; }
+        
+        .input-group { position: relative; margin-bottom: 35px; }
+        .input-group input {
+            width: 100%; padding: 12px 0; background: transparent; border: none; border-bottom: 2px solid #E5E0D8;
+            font-family: 'Montserrat'; font-size: 1.05rem; color: var(--c-cacao); outline: none; transition: border-color 0.3s;
+        }
+        .input-group label {
+            position: absolute; top: 12px; left: 0; color: #A0968C; font-size: 0.85rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 1.5px; pointer-events: none; transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .input-group input:focus ~ label, .input-group input:valid ~ label {
+            top: -15px; font-size: 0.65rem; color: var(--c-oro); font-weight: 600;
+        }
+        .input-group input:focus { border-bottom-color: var(--c-oro); }
+        
+        #form-message { 
+            text-align: center; margin-top: 20px; font-weight: 600; color: var(--c-oro); 
+            opacity: 0; transition: opacity 0.4s; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .btn-submit {
+            display: block; width: 100%; background: var(--c-cacao); color: var(--c-blanco);
+            padding: 16px 32px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--c-cacao);
+            border-radius: 4px; cursor: pointer; margin-top: 40px; position: relative; overflow: hidden;
+            z-index: 1; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .btn-submit::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0%; height: 100%;
+            background: var(--c-oro); transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); z-index: -1;
+        }
+        .btn-submit:hover::before { width: 100%; }
+        .btn-submit:hover { color: var(--c-blanco); border-color: var(--c-oro); transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+        /* =========================================
+           FOOTER CORPORATIVO (PLANTILLA MAESTRA)
+           ========================================= */
+        footer { background: var(--dark); padding: 80px 5% 40px; color: var(--white); font-family: 'Open Sans', sans-serif; position: relative;}
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 50px; max-width: 1400px; margin: 0 auto; text-align: left;}
+        .footer-col h4 { font-family: 'Montserrat', sans-serif; color: var(--mango); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; font-weight: 700;}
+        .footer-col a, .footer-col p { color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif; line-height: 1.6;}
+        .footer-col a:hover, .footer-col a:focus { color: var(--white); transform: translateX(5px); outline: none; }
+        .footer-bottom { text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; padding-top: 30px; color: #666; font-size: 0.8rem; font-family: 'Open Sans', sans-serif;}
+
+        .fade-in { opacity: 0; transform: translate3d(0, 30px, 0); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.is-visible { opacity: 1; transform: translate3d(0, 0, 0); }
+
+        /* =========================================================
+           RESPONSIVE GLOBAL Y CORRECCIONES
+           ========================================================= */
+        @media (max-width: 1024px) {
+            .navbar { width: 100%; top: 0; border-radius: 0; padding: 15px 5%; border: none; border-bottom: 1px solid rgba(197, 140, 70, 0.2); }
+            .navbar.scrolled { top: 0; }
+            .hamburger { display: flex; }
+            .brand-logo-img { height: 35px; }
+            .nav-logo { height: 26px !important; } 
+            
+            .nav-links { position: fixed; top: 0; left: 100%; width: 100%; height: 100vh; background: var(--c-crema); flex-direction: column; justify-content: center; align-items: center; gap: 40px; transition: left 0.4s ease; z-index: 1001; }
+            .nav-links.active { left: 0; }
+            .nav-links li a { font-size: 1.5rem; }
+            .nav-cta { font-size: 1rem !important; padding: 15px 30px !important; }
+            
+            .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+            .hero { grid-template-columns: 1fr; padding-top: 180px; text-align: center; gap: 60px; }
+            .hero-content { margin: 0 auto; }
+            .eyebrow { padding-left: 0; }
+            .eyebrow::before { display: none; }
+            .hero-image-wrapper { height: 60vh; max-width: 800px; margin: 0 auto; }
+            
+            .badge-artesanal { top: -20px; left: 20px; right: auto; bottom: auto; width: 150px; height: 150px; border-width: 8px; }
+            
+            .cta-section { padding: 100px 6%; }
+            .cta-grid { grid-template-columns: 1fr; gap: 60px; text-align: center; }
+            .check-list li { justify-content: center; text-align: left; }
+        }
+
+        @media (max-width: 768px) {
+            
+            .hero { padding-top: 80px !important; padding-bottom: 40px !important; gap: 30px !important; min-height: auto !important; }
+            .hero h1 { font-size: 3rem !important; margin-bottom: 10px !important; line-height: 1 !important;}
+            .hero p { font-size: 0.95rem !important; margin-bottom: 20px !important; }
+            .hero-image-wrapper { height: auto !important; max-height: 40vh !important; } 
+            .img-main { border-radius: 15px !important; }
+            .badge-artesanal { width: 90px !important; height: 90px !important; font-size: 0.9rem !important; border-width: 4px !important; top: -15px !important; left: -5px !important; }
+
+            .scrollytelling-section { height: 100vh !important; padding: 0 !important; border: none !important; }
+            .scroll-container { padding: 0 !important; gap: 0 !important; flex-direction: row !important; height: 100% !important; }
+            .scroll-text-block { position: absolute !important; width: 90% !important; left: 5% !important; right: auto !important; text-align: center !important; margin: 0 !important; opacity: 0; top: 50% !important; transform: translateY(-50%) !important; }
+            #text-nuez { top: 15% !important; }
+            #text-azucar { top: 75% !important; }
+            .scroll-text-block h3 { font-size: 1.8rem !important; margin-bottom: 5px !important; }
+            .scroll-text-block p { font-size: 0.9rem !important; }
+            .cookie-scroll { width: 260px !important; position: absolute !important; left: 50% !important; top: 50% !important; margin-top: -130px !important; margin-left: -130px !important; }
+            .ing-scroll { display: block !important; width: 90px !important; position: absolute !important; left: 50% !important; top: 50% !important; margin-top: -45px !important; margin-left: -45px !important; }
+
+            .section-padding { padding: 80px 0 !important; } 
+            .section-padding > .section-header { padding: 0 5% !important; margin-bottom: 40px !important; }
+            .section-header h2 { font-size: 2.5rem !important; margin-top: 10px !important;}
+
+            .bento-grid { display: flex !important; flex-direction: column !important; gap: 20px !important; padding: 0 5% !important; width: 100% !important; }
+            .bento-card { flex: none !important; max-width: none !important; padding: 40px 30px !important; height: auto !important; margin: 0 !important; border-radius: 15px !important; }
+            .bento-card h3 { font-size: 1.8rem !important; margin-bottom: 10px !important; line-height: 1.1 !important;}
+            .bento-card p { font-size: 1rem !important; line-height: 1.5 !important; }
+            .card-large { padding: 40px 30px !important; background: var(--c-cacao) !important; color: var(--c-crema) !important; }
+            .card-large h3 { color: var(--c-oro) !important; font-size: 2rem !important; }
+            .card-large p { color: rgba(255,255,255,0.8) !important; font-size: 1rem !important; max-width: 100% !important; }
+
+            .catalogo { padding: 60px 5% !important; }
+            .products-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px 10px !important; }
+            .product-card { padding: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+            .img-wrapper { height: auto !important; min-height: 140px !important; width: 100% !important; padding: 15px 10px !important; margin-bottom: 10px !important; border-radius: 15px !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; align-items: center !important; }
+            .product-card img { max-height: 75px !important; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.1)) !important; margin-bottom: 10px !important; }
+            .product-card h4 { font-size: 1.1rem !important; margin-bottom: 5px !important; line-height: 1.1 !important; text-align: center !important;}
+            .product-card p { font-size: 0.75rem !important; margin-bottom: 10px !important; min-height: auto !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3 !important; text-align: center !important;}
+            .hover-cta { position: relative !important; opacity: 1 !important; bottom: auto !important; left: auto !important; transform: none !important; padding: 8px 5px !important; font-size: 0.65rem !important; display: block !important; margin: 0 !important; width: 95% !important; box-shadow: none !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; border-radius: 8px !important; }
+            .product-card:hover .hover-cta { bottom: auto !important; }
+
+            .cta-section { padding: 60px 5% !important; }
+            .cta-grid { gap: 30px !important; }
+            .cta-text h2 { font-size: 2rem !important; margin-bottom: 10px !important; }
+            .cta-text p { font-size: 0.9rem !important; margin-bottom: 20px !important; }
+            .check-list li { font-size: 0.85rem !important; margin-bottom: 10px !important; }
+            .form-container { padding: 30px 20px !important; border-radius: 15px !important; }
+            .form-container h3 { font-size: 1.6rem !important; margin-bottom: 20px !important; }
+            .input-group { margin-bottom: 20px !important; }
+            .input-group input { padding: 8px 0 !important; font-size: 0.9rem !important; }
+            .input-group label { font-size: 0.75rem !important; top: 8px !important; }
+            .btn-submit { padding: 14px 20px !important; font-size: 0.8rem !important; margin-top: 10px !important; }
+
+            .footer-grid { text-align: left !important; gap: 40px !important; padding: 0 10px !important; }
+            .footer-col a:hover { transform: translateX(5px) !important; }
+            
+            .marquee-text { font-size: 1.8rem !important; }
+            
+            /* Ajuste Botón Idioma Celular */
+            .lang-floating { top: auto; bottom: 20px; left: 20px; width: 45px; height: 45px; font-size: 0.8rem; border-width: 2px; }
+            .lang-floating.hidden { transform: translateY(150px); }
+        }
+    </style>
+</head>
+<body class="lang-es">
+
+<div class="tv-wrapper">
+
+    <div class="noise-overlay"></div>
+
+    <nav id="navbar" class="navbar">
+        <a href="index.html" class="logo" aria-label="Ir al inicio de Mango BC">
+            <div class="nav-logo-wrapper">
+                <img src="mbc.png" alt="Mango BC Logo" class="nav-logo" loading="eager" decoding="async">
+            </div>
+        </a>
+        
+        <a href="#" class="brand-center-logo" aria-label="Inicio Campesinas">
+            <img src="LOGO-CAMPESINAS-02.png" alt="Campesinas" class="brand-logo-img">
+        </a>
+        
+        <div class="hamburger" id="hamburger" role="button" aria-label="Menú de navegación" tabindex="0">
+            <span></span><span></span><span></span>
+        </div>
+        
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#scroll-trigger-section" class="nav-item"><span class="es-text">Receta</span><span class="en-text">Recipe</span></a></li>
+            <li><a href="#catalogo" class="nav-item"><span class="es-text">Catálogo</span><span class="en-text">Catalog</span></a></li>
+            <li><a href="#distribuidores" class="nav-item"><span class="es-text">Distribuidores</span><span class="en-text">Distributors</span></a></li>
+            <li><a href="#distribuidores" class="nav-cta nav-item"><span class="es-text">COTIZAR</span><span class="en-text">QUOTE</span></a></li>
+        </ul>
+    </nav>
+
+    <button class="lang-floating" id="langToggle" aria-label="Cambiar Idioma">EN</button>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <span class="eyebrow fade-stagger"><span class="es-text">Calidad y Tradición</span><span class="en-text">Quality and Tradition</span></span>
+                <h1 class="fade-stagger"><span class="es-text">Galletas con <br><span>sabor a hogar.</span></span><span class="en-text">Cookies with a <br><span>homemade taste.</span></span></h1>
+                <p class="fade-stagger"><span class="es-text">Nuestra línea premium Campesinas te ofrece repostería mexicana de alta rotación con la autenticidad que enamora al mercado tradicional y retail.</span><span class="en-text">Our premium Campesinas line offers high-rotation Mexican pastries with the authenticity that traditional and retail markets love.</span></p>
+                <div class="fade-stagger" style="margin-top: 25px;">
+                    <a href="#catalogo" class="nav-cta" style="display: inline-block; padding: 16px 36px !important; font-size: 0.9rem !important;"><span class="es-text">Descubrir Catálogo</span><span class="en-text">Discover Catalog</span></a>
+                </div>
+            </div>
+            
+            <div class="hero-image-wrapper fade-up">
+                <div class="hero-img-container">
+                    <img src="familiacampesinsas.jpg" alt="Familia compartiendo Campesinas" class="img-main" id="hero-img">
+                </div>
+                <div class="badge-artesanal"><span class="es-text">Más para<br>tu familia</span><span class="en-text">More for<br>your family</span></div>
+            </div>
+        </section>
+
+        <div class="marquee-elegant">
+            <div class="marquee-content">
+                <span class="marquee-text"><span class="es-text">✦ CALIDAD PREMIUM ✦ INGREDIENTES NATURALES ✦ SABOR TRADICIONAL</span><span class="en-text">✦ PREMIUM QUALITY ✦ NATURAL INGREDIENTS ✦ TRADITIONAL TASTE</span></span>
+                <span class="marquee-text"><span class="es-text">✦ CALIDAD PREMIUM ✦ INGREDIENTES NATURALES ✦ SABOR TRADICIONAL</span><span class="en-text">✦ PREMIUM QUALITY ✦ NATURAL INGREDIENTS ✦ TRADITIONAL TASTE</span></span>
+                <span class="marquee-text"><span class="es-text">✦ CALIDAD PREMIUM ✦ INGREDIENTES NATURALES ✦ SABOR TRADICIONAL</span><span class="en-text">✦ PREMIUM QUALITY ✦ NATURAL INGREDIENTS ✦ TRADITIONAL TASTE</span></span>
+                <span class="marquee-text"><span class="es-text">✦ CALIDAD PREMIUM ✦ INGREDIENTES NATURALES ✦ SABOR TRADICIONAL</span><span class="en-text">✦ PREMIUM QUALITY ✦ NATURAL INGREDIENTS ✦ TRADITIONAL TASTE</span></span>
+            </div>
+        </div>
+
+        <section class="scrollytelling-section" id="scroll-trigger-section">
+            <div class="scroll-container">
+                
+                <div class="scroll-text-block scroll-text-left" id="text-nuez">
+                    <h3><span class="es-text">Toque Artesanal</span><span class="en-text">Artisanal Touch</span></h3>
+                    <p><span class="es-text">Ingredientes seleccionados meticulosamente para garantizar un producto de gran demanda que respeta la receta clásica de nuestras abuelas.</span><span class="en-text">Meticulously selected ingredients to guarantee a high-demand product that respects our grandmothers' classic recipe.</span></p>
+                </div>
+
+                <div class="scroll-text-block scroll-text-right" id="text-azucar">
+                    <h3><span class="es-text">Calidad Comercial</span><span class="en-text">Commercial Quality</span></h3>
+                    <p><span class="es-text">Elaboradas bajo los estándares más estrictos para asegurar larga vida de anaquel y alta rotación en piso de venta.</span><span class="en-text">Made under the strictest standards to ensure long shelf life and high rotation on the sales floor.</span></p>
+                </div>
+
+                <img src="besonuezsinfondo.png" class="scroll-image cookie-scroll" id="galleta-scroll" alt="Beso de Nuez">
+
+                <img src="nuez.png" class="scroll-image ing-scroll" id="nuez-scroll" alt="Nuez">
+                <img src="azucar.png" class="scroll-image ing-scroll" id="azucar-scroll" alt="Azúcar">
+
+            </div>
+        </section>
+
+        <section class="section-padding">
+            <div class="section-header fade-up">
+                <span class="eyebrow" style="justify-content: center;"><span class="es-text">Nuestra Esencia</span><span class="en-text">Our Essence</span></span>
+                <h2><span class="es-text">¿Por qué Campesinas<br>es un éxito en ventas?</span><span class="en-text">Why is Campesinas<br>a sales success?</span></h2>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card fade-up">
+                    <h3><span class="es-text">Fidelidad de Consumo</span><span class="en-text">Consumer Loyalty</span></h3>
+                    <p><span class="es-text">Las recetas clásicas y la calidad superior generan recompra constante. Campesinas es el antojo diario que no puede faltar en casa.</span><span class="en-text">Classic recipes and superior quality generate constant repurchases. Campesinas is the daily craving that can't be missing at home.</span></p>
+                </div>
+                <div class="bento-card fade-up" style="transition-delay: 0.1s;">
+                    <h3><span class="es-text">Elaboración Premium</span><span class="en-text">Premium Preparation</span></h3>
+                    <p><span class="es-text">Elaboramos repostería cuidando la selección de nuestros ingredientes, aportando un sabor inigualable y auténtico.</span><span class="en-text">We bake pastries taking care of the selection of our ingredients, providing an unmatched and authentic taste.</span></p>
+                </div>
+                
+                <div class="bento-card card-large fade-up" style="transition-delay: 0.2s;">
+                    <h3><span class="es-text">Soporte B2B Total</span><span class="en-text">Total B2B Support</span></h3>
+                    <p><span class="es-text">Entregamos en tiempo y forma en cualquier punto. Respaldados por la capacidad industrial de Mango Business Center para abastecer grandes volúmenes con exhibidores listos para venta.</span><span class="en-text">We deliver on time anywhere. Backed by Mango Business Center's industrial capacity to supply large volumes with ready-to-sell displays.</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-padding catalogo" id="catalogo">
+            <div class="section-header fade-up">
+                <span class="eyebrow"><span class="es-text">Nuestro Portafolio B2B</span><span class="en-text">Our B2B Portfolio</span></span>
+                <h2><span class="es-text">El catálogo del buen gusto</span><span class="en-text">The catalog of good taste</span></h2>
+            </div>
+            <div class="products-grid">
+                
+                <div class="product-card fade-up">
+                    <div class="img-wrapper">
+                        <img src="Besos 100 g Frente.png" alt="Besos de Nuez (Nanná)">
+                        <a href="#distribuidores" class="hover-cta"><span class="es-text">Cotizar Pedido</span><span class="en-text">Get a Quote</span></a>
+                    </div>
+                    <h4><span class="es-text">Besos de Nuez</span><span class="en-text">Pecan Kisses</span></h4>
+                    <p><span class="es-text">Galletas sabor a nuez espolvoreada con azúcar glass. Perfecta para saciar el hambre entre comidas.</span><span class="en-text">Pecan-flavored cookies dusted with powdered sugar. Perfect for satisfying hunger between meals.</span></p>
+                </div>
+
+                <div class="product-card fade-up">
+                    <div class="img-wrapper">
+                        <img src="besochocolate.png" alt="Besos de Nuez (Nanná)">
+                        <a href="#distribuidores" class="hover-cta"><span class="es-text">Cotizar Pedido</span><span class="en-text">Get a Quote</span></a>
+                    </div>
+                    <h4><span class="es-text">Besos de chocolate</span><span class="en-text">Chocolate Kisses</span></h4>
+                    <p><span class="es-text">Galletas que capturan el sabor clásico del chocolate. Su textura ligeramente crujiente las convierte en un antojo perfecto para cualquier momento.</span><span class="en-text">Cookies that capture the classic chocolate flavor. Their slightly crunchy texture makes them a perfect craving for any moment.</span></p>
+                </div>
+                
+             <div class="product-card fade-up">
+                    <div class="img-wrapper">
+                        <img src="EnjVainilla-Frente.png" alt="Waffle de Vainilla">
+                        <a href="#distribuidores" class="hover-cta"><span class="es-text">Cotizar Pedido</span><span class="en-text">Get a Quote</span></a>
+                    </div>
+                    <h4><span class="es-text">Enjambre de Vainilla</span><span class="en-text">Vanilla Cluster</span></h4>
+                    <p><span class="es-text">Galleta con avena, salvado de trigo y pepita de calabaza. Textura crujiente. Opción indulgente para jóvenes y niños. Sabor Vainilla.</span><span class="en-text">Cookie with oats, wheat bran, and pumpkin seeds. Crunchy texture. Indulgent option for youth and kids. Vanilla flavor.</span></p>
+                </div>
+
+                <div class="product-card fade-up" style="transition-delay: 0.1s;">
+                    <div class="img-wrapper">
+                        <img src="EnjChoco-Frente.png" alt="Besos de Chocolate (Nanná)">
+                        <a href="#distribuidores" class="hover-cta"><span class="es-text">Cotizar Pedido</span><span class="en-text">Get a Quote</span></a>
+                    </div>
+                    <h4><span class="es-text">Enjambre de Chocolate</span><span class="en-text">Chocolate Cluster</span></h4>
+                    <p><span class="es-text">Galleta con avena, salvado de trigo y pepita de calabaza. Textura crujiente. Opción indulgente para jóvenes y niños. Sabor Chocolate.</span><span class="en-text">Cookie with oats, wheat bran, and pumpkin seeds. Crunchy texture. Indulgent option for youth and kids. Chocolate flavor.</span></p>
+                </div>
+
+                <div class="product-card fade-up" style="transition-delay: 0.2s;">
+                    <div class="img-wrapper">
+                        <img src="Surtipack-Frente.png" alt="Besos de Coco (Nanná)">
+                        <a href="#distribuidores" class="hover-cta"><span class="es-text">Cotizar Pedido</span><span class="en-text">Get a Quote</span></a>
+                    </div>
+                    <h4><span class="es-text">Surtipack</span><span class="en-text">Variety Pack</span></h4>
+                    <p><span class="es-text">Mix de galletas redondas en diferentes sabores. Perfecto para compartir en familia o fiestas. Mantequilla, nuez y chispas.</span><span class="en-text">Mix of round cookies in different flavors. Perfect for sharing with family or at parties. Butter, pecan, and chocolate chips.</span></p>
+                </div>
+                
+                <div class="product-card fade-up" style="transition-delay: 0.1s;">
+                    <div class="img-wrapper">
+                        <img src="Laminitas-Frente.png" alt="Pays">
+                        <a href="#distribuidores" class="hover-cta"><span class="es-text">Cotizar Pedido</span><span class="en-text">Get a Quote</span></a>
+                    </div>
+                    <h4><span class="es-text">Laminitas</span><span class="en-text">Flakes</span></h4>
+                    <p><span class="es-text">Galleta nutritiva elaborada con avena, linaza, uva pasa, salvado de trigo, arándano, nuez, almendra, dátil y leche. Ideal para media mañana.</span><span class="en-text">Nutritious cookie made with oats, flaxseed, raisins, wheat bran, cranberry, pecan, almond, dates, and milk. Ideal for mid-morning.</span></p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="cta-section" id="distribuidores">
+            <div class="cta-grid">
+                <div class="cta-text fade-up">
+                    <span class="eyebrow" style="color: rgba(255,255,255,0.4);"><span class="es-text">Alianzas Comerciales B2B</span><span class="en-text">B2B Commercial Alliances</span></span>
+                    <h2><span class="es-text">Aumenta el ticket de tu negocio<br><span>con repostería premium.</span></span><span class="en-text">Increase your business ticket<br><span>with premium pastries.</span></span></h2>
+                    <p><span class="es-text">Únete a la red de distribuidores Mango BC. Te ofrecemos productos honestos, con imagen altamente atractiva en anaquel, avalados por un sabor excepcional.</span><span class="en-text">Join the Mango BC distributor network. We offer honest products with highly attractive shelf appeal, backed by exceptional taste.</span></p>
+                    <ul class="check-list">
+                        <li><span class="es-text">Alta rotación y rentabilidad para canales retail y detalle.</span><span class="en-text">High rotation and profitability for retail and wholesale channels.</span></li>
+                        <li><span class="es-text">Entregas garantizadas (Cajas Máster y Displays).</span><span class="en-text">Guaranteed deliveries (Master Boxes and Displays).</span></li>
+                        <li><span class="es-text">Soporte de Grupo Mango Business Center.</span><span class="en-text">Support from Mango Business Center Group.</span></li>
+                        <li><span class="es-text">Calidad de exportación a LATAM y USA.</span><span class="en-text">Export quality to LATAM and the USA.</span></li>
+                    </ul>
+                </div>
+                <div class="form-container fade-up" style="transition-delay: 0.2s;">
+                    <h3><span class="es-text">Inicia tu distribución</span><span class="en-text">Start your distribution</span></h3>
+                    <form id="distribuidores-form">
+                        <div class="input-group">
+                            <input type="text" name="nombre" id="nombre" required>
+                            <label for="nombre"><span class="es-text">Nombre Comercial / Empresa</span><span class="en-text">Trade Name / Company</span></label>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="telefono" id="telefono" required>
+                            <label for="telefono"><span class="es-text">Teléfono de Contacto</span><span class="en-text">Contact Phone</span></label>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" name="correo" id="correo" required>
+                            <label for="correo"><span class="es-text">Correo Electrónico</span><span class="en-text">Email Address</span></label>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-submit"><span class="es-text">Solicitar Cotización Oficial</span><span class="en-text">Request Official Quote</span></button>
+                    </form>
+                    <div id="form-message"><span class="es-text">¡Petición enviada con éxito! Te contactaremos pronto.</span><span class="en-text">Request sent successfully! We will contact you soon.</span></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-grid reveal">
+            <div class="footer-col">
+                <div class="footer-logo" style="margin-bottom: 20px;">
+                    <img src="mbc.png" alt="Mango BC" style="height: 50px; width: auto; filter: brightness(0) invert(1);" loading="lazy" decoding="async">
+                </div>
+                <p style="color: #888; font-size: 0.9rem; line-height: 1.6; font-family: 'Open Sans', sans-serif;">Morelia, Michoacán<br><span class="es-text">México</span><span class="en-text">Mexico</span>, CP 58000<br>+52 443 332 7430</p>
+            </div>
+            <div class="footer-col">
+                <h4 style="color: var(--mango); font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; font-weight: 700;"><span class="es-text">Contacto Directo</span><span class="en-text">Direct Contact</span></h4>
+                <a href="mailto:socios@mangobusiness.com" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;"><span class="es-text">Ventas y Socios</span><span class="en-text">Sales & Partners</span></a>
+                <a href="mailto:talento@mangobusiness.com" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;"><span class="es-text">Atracción de Talento</span><span class="en-text">Talent Acquisition</span></a>
+                <a href="mailto:compras@mangobusiness.com" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;"><span class="es-text">Proveedores y Compras</span><span class="en-text">Suppliers & Purchasing</span></a>
+            </div>
+            <div class="footer-col">
+                <h4 style="color: var(--mango); font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; font-weight: 700;"><span class="es-text">Redes Sociales</span><span class="en-text">Social Media</span></h4>
+                <a href="https://www.linkedin.com/company/mango-business-center" target="_blank" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;" rel="noopener">LinkedIn</a>
+                <a href="https://www.instagram.com/mangobusinesscenter" target="_blank" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;" rel="noopener">Instagram</a>
+                <a href="https://www.facebook.com/mangobusinesscenter" target="_blank" style="color: #AAA; text-decoration: none; display: block; margin-bottom: 15px; font-size: 0.9rem; transition: color 0.3s; font-family: 'Open Sans', sans-serif;" rel="noopener">Facebook</a>
+            </div>
+        </div>
+        <div class="footer-bottom reveal delay-1" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; padding-top: 30px; color: #666; font-size: 0.8rem; font-family: 'Open Sans', sans-serif;">
+            © 2026 MANGO BUSINESS CENTER
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    // LÓGICA DE BILINGÜE
+    const langToggle = document.getElementById('langToggle');
+    if(langToggle) {
+        // Detección automática según el navegador
+        const userLang = navigator.language || navigator.userLanguage; 
+        let currentLang = userLang.toLowerCase().startsWith('es') ? 'es' : 'en';
+
+        // Setear estado inicial
+        document.body.className = 'lang-' + currentLang;
+        langToggle.innerText = currentLang === 'es' ? 'EN' : 'ES';
+        document.documentElement.lang = currentLang;
+
+        // Comportamiento del botón manual
+        langToggle.addEventListener('click', () => {
+            document.body.classList.remove('lang-' + currentLang);
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            document.body.classList.add('lang-' + currentLang);
+            langToggle.innerText = currentLang === 'es' ? 'EN' : 'ES';
+            document.documentElement.lang = currentLang;
+        });
+    }
+
+    // Lógica Navbar Scrolled y Menú Hamburguesa
+    const navbar = document.getElementById('navbar');
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    const navItems = document.querySelectorAll('.nav-item');
+    let lastScrollTop = 0;
+
+    window.addEventListener('scroll', () => {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > 50) { 
+            navbar.classList.add('scrolled'); 
+            if(langToggle) langToggle.classList.add('scrolled');
+        } else { 
+            navbar.classList.remove('scrolled'); 
+            if(langToggle) langToggle.classList.remove('scrolled');
+        }
+        
+        if (scrollTop > lastScrollTop && scrollTop > 300) { 
+            navbar.classList.add('hidden'); 
+            if(langToggle) langToggle.classList.add('hidden');
+        } else { 
+            navbar.classList.remove('hidden'); 
+            if(langToggle) langToggle.classList.remove('hidden');
+        }
+        lastScrollTop = scrollTop;
+    });
+
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : 'auto';
+    });
+
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navLinks.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+    });
+
+    // 1. Animaciones Fade Up Nativas
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-up, .fade-stagger').forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(40px)';
+        el.style.transition = `opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) ${el.classList.contains('fade-stagger') ? index * 0.15 : 0}s`;
+        observer.observe(el);
+    });
+
+    // Registramos ScrollTrigger de GSAP para TODAS LAS PANTALLAS
+    gsap.registerPlugin(ScrollTrigger);
+
+    let mm = gsap.matchMedia();
+
+    // Animación GSAP para COMPUTADORAS
+    mm.add("(min-width: 769px)", () => {
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#scroll-trigger-section",
+                start: "top top", 
+                end: "+=1200", 
+                scrub: 1, 
+                pin: true, 
+            }
+        });
+
+        gsap.set("#galleta-scroll", { y: -250, scale: 0.6, rotation: -45 });
+        gsap.set(".ing-scroll", { scale: 0, opacity: 0 });
+
+        tl.to("#galleta-scroll", { y: 0, scale: 1, rotation: 0, duration: 0.8, ease: "power1.out" })
+          .to("#galleta-scroll", { scale: 1.1, duration: 0.8 }, "+=0.1")
+          .to("#nuez-scroll", { x: -350, y: -180, scale: 1.5, rotation: -20, opacity: 1, duration: 1 }, "<")
+          .to("#text-nuez", { x: 50, opacity: 1, duration: 0.5 }, "<0.3")
+          .to("#azucar-scroll", { x: 350, y: 180, scale: 1.5, rotation: 30, opacity: 1, duration: 1 }, "<")
+          .to("#text-azucar", { x: -50, opacity: 1, duration: 0.5 }, "<0.3")
+          .to({}, {duration: 1.2})
+          .to("#nuez-scroll", { x: 0, y: 0, scale: 0, opacity: 0, duration: 0.8 })
+          .to("#azucar-scroll", { x: 0, y: 0, scale: 0, opacity: 0, duration: 0.8 }, "<")
+          .to("#text-nuez", { x: 0, opacity: 0, duration: 0.4 }, "<")
+          .to("#text-azucar", { x: 0, opacity: 0, duration: 0.4 }, "<")
+          .to("#galleta-scroll", { scale: 0.8, filter: "blur(5px)", opacity: 0, duration: 0.8 }, "<0.2");
+    });
+
+    // Animación GSAP para CELULARES (Movimientos verticales para adaptarse a pantalla)
+    mm.add("(max-width: 768px)", () => {
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#scroll-trigger-section",
+                start: "top top", 
+                end: "+=800", // Scroll más corto para móvil
+                scrub: 1, 
+                pin: true, 
+            }
+        });
+
+        gsap.set("#galleta-scroll", { y: -150, scale: 0.5, rotation: -45 });
+        gsap.set(".ing-scroll", { scale: 0, opacity: 0 });
+
+        tl.to("#galleta-scroll", { y: 0, scale: 1, rotation: 0, duration: 0.8, ease: "power1.out" })
+          .to("#galleta-scroll", { scale: 1.05, duration: 0.8 }, "+=0.1")
+          .to("#nuez-scroll", { x: -130, y: -110, scale: 1.2, rotation: -20, opacity: 1, duration: 1 }, "<")
+          .to("#text-nuez", { opacity: 1, duration: 0.5 }, "<0.3")
+          .to("#azucar-scroll", { x: 130, y: 110, scale: 1.2, rotation: 30, opacity: 1, duration: 1 }, "<")
+          .to("#text-azucar", { opacity: 1, duration: 0.5 }, "<0.3")
+          .to({}, {duration: 1.2})
+          .to("#nuez-scroll", { x: 0, y: 0, scale: 0, opacity: 0, duration: 0.8 })
+          .to("#azucar-scroll", { x: 0, y: 0, scale: 0, opacity: 0, duration: 0.8 }, "<")
+          .to("#text-nuez", { opacity: 0, duration: 0.4 }, "<")
+          .to("#text-azucar", { opacity: 0, duration: 0.4 }, "<")
+          .to("#galleta-scroll", { scale: 0.6, filter: "blur(3px)", opacity: 0, duration: 0.8 }, "<0.2");
+    });
+
+    // Formulario WhatsApp Redirection
+    document.getElementById('distribuidores-form').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+        const btn = document.getElementById('btn-submit');
+        const msg = document.getElementById('form-message');
+        
+        const isEn = document.body.classList.contains('lang-en');
+        btn.innerHTML = isEn ? "Sending..." : "Enviando...";
+        btn.style.opacity = "0.7";
+        
+        const nombre = document.getElementById('nombre').value;
+        const email = document.getElementById('correo').value;
+        const telefono = document.getElementById('telefono').value;
+
+        const asunto = encodeURIComponent("Nueva Solicitud de Contacto - Distribuidores B2B");
+        const cuerpo = encodeURIComponent(`Hola, tenemos un nuevo prospecto interesado en distribuir Repostería:\n\nNombre Comercial: ${nombre}\nCorreo: ${email}\nTeléfono: ${telefono}\n`);
+            
+        setTimeout(() => {
+            window.location.href = `mailto:ventas@mangobc.com?subject=${asunto}&body=${cuerpo}`;
+            this.reset();
+            btn.innerHTML = isEn ? '<span class="en-text">Request Official Quote</span>' : '<span class="es-text">Solicitar Cotización Oficial</span>';
+            btn.style.opacity = "1";
+            msg.style.opacity = "1";
+            setTimeout(() => { msg.style.opacity = "0"; }, 5000);
+        }, 1500);
+    });
+</script>
+</body>
+</html>

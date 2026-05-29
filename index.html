@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mango BC </title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           VARIABLES: TEMA OSCURO CORPORATIVO FIJO
+           ========================================= */
+        :root {
+            --mango: #fdea14; 
+            --mango-hover: #e5d312;
+            --dark: #0a0a0a;  
+            --dark-card: #141414;
+            --dark-glass: rgba(20, 20, 20, 0.7);
+            --white: #FFFFFF;
+            
+            --theme-bg: var(--dark);
+            --theme-text: var(--white);
+            --theme-text-muted: #AAAAAA;
+            --theme-card: var(--dark-card);
+            --theme-border: rgba(255, 255, 255, 0.08);
+            --theme-step-bg: rgba(255, 255, 255, 0.05);
+            
+            --shadow-soft: 0 15px 35px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 25px rgba(253, 234, 20, 0.15);
+            
+            --radius: 16px; 
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Scrollbar delgada y elegante global */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--theme-bg); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--mango); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* BLOQUEO DE SCROLL GLOBAL - El body NO scrollea */
+        html, body {
+            overflow: hidden; 
+            height: 100vh;
+            width: 100%;
+            background-color: var(--theme-bg);
+            color: var(--theme-text);
+            font-family: 'Open Sans', sans-serif;
+            transition: background-color 0.6s ease, color 0.6s ease;
+        }
+
+        h1, h2, h3, h4, .font-title { font-family: 'Montserrat', sans-serif; }
+        
+        body.lang-es .en-text { display: none !important; }
+        body.lang-es .es-text { display: inline-block !important; }
+        body.lang-en .es-text { display: none !important; }
+        body.lang-en .en-text { display: inline-block !important; }
+
+        .reveal { opacity: 0; transform: translateY(20px); transition: 0.6s all ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* =========================================
+           NAVBAR
+           ========================================= */
+        nav {
+            position: fixed; width: 100%; top: 0; left: 0;
+            padding: 12px 5%; background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+        }
+        
+        .logo img { height: 45px; transition: var(--transition); filter: brightness(0) invert(1); }
+        .logo:hover img { transform: scale(1.05); filter: brightness(0) invert(1) drop-shadow(0 0 10px var(--mango)); }
+        
+        .nav-links { display: flex; gap: 10px; align-items: center; }
+        .nav-tab { 
+            background: transparent; color: #888; border: none; 
+            font-family: 'Montserrat'; font-weight: 700; font-size: 0.8rem; 
+            text-transform: uppercase; cursor: pointer; padding: 10px 15px; 
+            transition: var(--transition); border-radius: 10px;
+            position: relative; overflow: hidden;
+        }
+        .nav-tab::before {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 0; height: 3px; background: var(--mango); transition: var(--transition);
+        }
+        .nav-tab:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+        .nav-tab.active { color: var(--white); background: rgba(255,255,255,0.08); }
+        .nav-tab.active::before { width: 50%; }
+        
+        .lang-switch {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: var(--mango); padding: 8px 14px; border-radius: 10px; cursor: pointer;
+            font-weight: 900; font-family: 'Montserrat'; font-size: 0.75rem; transition: var(--transition);
+        }
+        .lang-switch:hover { background: var(--mango); color: var(--dark); border-color: var(--mango); box-shadow: var(--shadow-glow); }
+
+        .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; padding: 10px; z-index: 1001; }
+        .hamburger span { width: 30px; height: 3px; background-color: var(--white); border-radius: 3px; transition: 0.4s; }
+
+        /* =========================================
+           HERO
+           ========================================= */
+        .hero-fullscreen {
+            position: relative; z-index: 1; width: 100%; height: 100vh;
+            display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hero-fullscreen.hidden { transform: translateY(-100vh); }
+        .hero-video {
+            position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
+            width: auto; height: auto; z-index: -2; transform: translate(-50%, -50%); object-fit: cover;
+        }
+        .hero-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(10,10,10,0.4) 0%, rgba(10,10,10,0.9) 100%);
+            z-index: -1;
+        }
+        .hero-content { z-index: 1; padding: 0 5%; max-width: 1100px; animation: fadeInUp 1.2s ease forwards; width: 100%; }
+        .hero-logo-large { width: 100%; max-width: 500px; height: auto; margin: 0 auto 40px auto; display: block; filter: brightness(0) invert(1) drop-shadow(0 15px 30px rgba(0,0,0,0.8)); }
+        .hero-buttons-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; }
+
+        .scroll-down-btn {
+            background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: var(--white); border: 1px solid rgba(255, 255, 255, 0.2); padding: 16px 32px; border-radius: 50px; 
+            font-family: 'Montserrat'; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; cursor: pointer; transition: var(--transition); letter-spacing: 1px;
+        }
+        .scroll-down-btn:hover { background: var(--mango); border-color: var(--mango); color: var(--dark); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(253, 234, 20, 0.25); }
+
+        /* =========================================
+           LÓGICA DE SCROLL INDIVIDUAL (TIPO APP)
+           ========================================= */
+        .dashboard-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            padding-top: 85px; z-index: 0; 
+            overflow: hidden; /* CERO SCROLL GLOBAL */
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+            display: flex; flex-direction: column;
+        } 
+        .dashboard-container.visible { opacity: 1; pointer-events: auto; }
+
+        .tab-content { 
+            display: none; opacity: 0; transition: opacity 0.4s ease; 
+            height: 100%; width: 100%; 
+        }
+        .tab-content.active { 
+            display: flex; flex-direction: column; opacity: 1; 
+            animation: fadeInTab 0.5s ease forwards; 
+        }
+        @keyframes fadeInTab { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+
+        /* Menú de píldoras FIJO arriba */
+        .sub-nav-wrapper {
+            display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+            padding: 10px 5%; margin-bottom: 10px; 
+            flex-shrink: 0; /* IMPIDE QUE SE ENCOJA AL SCROLLEAR */
+        }
+        
+        .sub-tab {
+            background: var(--theme-card); color: var(--theme-text); border: 1px solid var(--theme-border);
+            padding: 12px 24px; border-radius: 50px; font-family: 'Montserrat'; font-weight: 800; 
+            font-size: 0.8rem; cursor: pointer; transition: all 0.5s ease; text-transform: uppercase;
+        }
+        .sub-tab:hover { transform: translateY(-3px); border-color: var(--mango); }
+        .sub-tab.active { background: var(--mango); color: var(--dark); border-color: var(--mango); box-shadow: 0 8px 25px rgba(253,234,20,0.25); }
+
+        /* EL CONTENEDOR QUE REALMENTE HACE SCROLL */
+        .sub-content { 
+            display: none; padding: 0 5%; max-width: 1400px; margin: 0 auto; width: 100%; 
+            flex-grow: 1; /* TOMA EL ESPACIO RESTANTE */
+            overflow-y: auto; /* AQUI ESTA LA MAGIA DEL SCROLL */
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .sub-content.active { 
+            display: flex; flex-direction: column; 
+            padding-bottom: 80px; /* Margen inferior para no cortar contenido */
+            animation: fadeInUp 0.4s ease forwards; 
+        }
+
+        /* Excepción para Contacto (no tiene sub-tabs, scrollea directamente) */
+        #tab-contacto { overflow-y: auto; padding-bottom: 60px; }
+
+        /* =========================================
+           TARJETAS Y UI
+           ========================================= */
+        .section-title { font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 900; margin-bottom: 10px; text-transform: uppercase; line-height: 1; text-align: center; letter-spacing: -1px; }
+        .section-title span { color: var(--mango); }
+        .section-desc { font-size: 1.05rem; color: var(--theme-text-muted); max-width: 800px; margin: 0 auto 30px auto; line-height: 1.6; text-align: center; font-weight: 600; }
+        
+        .general-card { 
+            background: var(--theme-card); padding: 40px; border-radius: var(--radius); 
+            box-shadow: var(--shadow-soft); margin-bottom: 30px; transition: all 0.5s ease; border: 1px solid var(--theme-border);
+        }
+        .general-card:hover { transform: translateY(-4px); }
+        
+        .general-card-dark { 
+            background: linear-gradient(145deg, var(--dark) 0%, var(--dark-card) 100%); 
+            padding: 40px; border-radius: var(--radius); margin-bottom: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);
+            position: relative; overflow: hidden;
+        }
+        .general-card-dark::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(253,234,20,0.03) 0%, transparent 60%); z-index: 0; pointer-events: none;
+        }
+        .general-card-dark > * { position: relative; z-index: 1; }
+        
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; align-items: center;}
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; align-items: stretch;}
+
+        .btn-mango { background: var(--mango); color: var(--dark); padding: 15px 35px; border-radius: 50px; font-family: 'Montserrat'; font-weight: 900; text-decoration: none; text-transform: uppercase; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: var(--transition); box-shadow: 0 8px 15px rgba(253, 234, 20, 0.2); letter-spacing: 1px;}
+        .btn-mango:hover { transform: translateY(-3px) scale(1.02); background: var(--mango-hover); }
+        
+        .btn-outline-dark { background: transparent; color: var(--theme-text); border: 2px solid var(--theme-text); padding: 15px 35px; border-radius: 50px; font-family: 'Montserrat'; font-weight: 900; text-decoration: none; text-transform: uppercase; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; transition: all 0.5s ease; letter-spacing: 1px;}
+        .btn-outline-dark:hover { background: var(--theme-text); color: var(--theme-bg); transform: translateY(-3px); }
+
+        /* =========================================
+           MÓDULOS (Valores, Marcas, Equipo, etc)
+           ========================================= */
+        .valores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .valor-card { background: var(--theme-card); padding: 30px; border-radius: var(--radius); border: 1px solid var(--theme-border); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; transition: all 0.5s ease; }
+        .valor-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--mango); transform: scaleY(0); transition: var(--transition); transform-origin: bottom; }
+        .valor-card:hover { transform: translateY(-5px); border-color: transparent; }
+        .valor-card:hover::before { transform: scaleY(1); }
+        .valor-num { color: var(--theme-border); font-family: 'Montserrat'; font-weight: 900; font-size: 3rem; line-height: 0.8; margin-bottom: 15px; transition: var(--transition); letter-spacing: -2px;}
+        .valor-card:hover .valor-num { color: var(--mango); }
+        .valor-title { font-family: 'Montserrat'; font-weight: 900; font-size: 1.15rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -0.5px; }
+        .valor-desc { color: var(--theme-text-muted); font-size: 0.95rem; line-height: 1.6; font-weight: 600; }
+
+        .marcas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
+        .marca-dark-card { background: var(--dark-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: var(--radius); padding: 35px 25px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(255,255,255,0.08); transition: var(--transition); position: relative; overflow: hidden; }
+        .marca-dark-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); border-color: rgba(253,234,20,0.3); }
+        .marca-cat { color: var(--mango); font-family: 'Montserrat'; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 2px; background: rgba(253,234,20,0.1); padding: 6px 15px; border-radius: 50px;}
+        .marca-img-wrapper { position: relative; width: 100%; height: 220px; margin-bottom: 25px; perspective: 1000px; }
+        .marca-img-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.5)); }
+        .img-hover { opacity: 0; transform: scale(1.1) translateZ(-50px) rotateY(10deg); }
+        .marca-dark-card:hover .img-main { opacity: 0; transform: scale(0.9) rotateY(-10deg); filter: blur(8px); }
+        .marca-dark-card:hover .img-hover { opacity: 1; transform: scale(1) translateZ(0) rotateY(0); filter: blur(0); }
+        .marca-title { color: var(--white); font-family: 'Montserrat'; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 15px; line-height: 1; letter-spacing: -1px; }
+        .marca-desc { color: #999; font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; font-weight: 600;}
+        .btn-distribucion { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.2); padding: 14px 0; width: 100%; border-radius: 10px; font-family: 'Montserrat'; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; text-decoration: none; transition: var(--transition); margin-top: auto; letter-spacing: 1px; }
+        .btn-distribucion:hover { background: var(--mango); color: var(--dark); border-color: var(--mango); }
+
+        .presentaciones-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; margin-top: 30px; }
+        .pdf-card { background: var(--theme-card); border: 1px solid var(--theme-border); border-radius: var(--radius); padding: 25px; transition: all 0.5s ease; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .pdf-card:hover { border-color: var(--mango); transform: translateY(-8px); }
+        .pdf-icon { width: 50px; height: 50px; background: rgba(253,234,20,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; color: var(--theme-text); font-size: 1.3rem;}
+        .pdf-title { font-family: 'Montserrat'; font-size: 1.1rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -0.5px;}
+
+        .equipo-container-flex { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; justify-content: center; max-width: 800px; margin: 0 auto; width: 100%; }
+        .equipo-card { background: var(--theme-card); padding: 30px; border-radius: var(--radius); border: 1px solid var(--theme-border); text-align: center; transition: all 0.5s ease; }
+        .equipo-card:hover { transform: translateY(-10px); border-color: var(--mango); }
+        .equipo-img-wrapper { width: 100%; aspect-ratio: 1 / 1; margin: 0 auto 20px; border-radius: var(--radius); overflow: hidden; background: #EAEAEA; transition: var(--transition); }
+        .equipo-img-wrapper img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.1); transition: var(--transition); }
+        .equipo-card:hover .equipo-img-wrapper img { filter: grayscale(0%); transform: scale(1.05); }
+
+        .job-card { background: var(--theme-card); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--theme-border); transition: all 0.5s ease; overflow: hidden; cursor: pointer; }
+        .job-card:hover { border-color: var(--mango); transform: translateX(4px); }
+        .job-header { padding: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .job-header h4 { font-size: 1.1rem; margin-bottom: 5px; font-weight: 900;}
+        .job-header p { font-size: 0.8rem; color: var(--theme-text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0;}
+        .toggle-icon { width: 35px; height: 35px; border-radius: 50%; background: var(--theme-step-bg); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 300; transition: all 0.5s ease; }
+        .job-card.open .toggle-icon { transform: rotate(45deg); background: var(--mango); color: var(--dark); }
+        .job-details { max-height: 0; opacity: 0; padding: 0 25px; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); background: var(--theme-step-bg); }
+        .job-card.open .job-details { max-height: 800px; opacity: 1; padding: 25px; border-top: 1px solid var(--theme-border); }
+        .job-details p { font-size: 0.95rem; color: var(--theme-text-muted); line-height: 1.6; margin-bottom: 15px; font-weight: 600;}
+        .job-details strong { font-family: 'Montserrat'; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 5px;}
+
+        .form-input { width: 100%; padding: 15px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--white); font-family: 'Open Sans'; font-size: 0.95rem; font-weight: 600; transition: var(--transition); outline: none; margin-bottom: 15px; }
+        .form-input::placeholder { color: #666; }
+        .form-input:focus { border-color: var(--mango); background: rgba(0,0,0,0.5); }
+        select.form-input { appearance: none; cursor: pointer; color: #AAA; background-image: url('data:image/svg+xml;utf8,<svg fill="%23fdea14" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: center; }
+        select.form-input option { background: var(--dark); color: var(--white); }
+
+        .img-placeholder { width: 100%; height: 100%; background: linear-gradient(45deg, #222, #111); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: var(--radius);}
+
+        /* BOTÓN FLOTANTE */
+        .btn-floating-contact {
+            position: fixed; bottom: 30px; right: 30px; background: var(--dark); color: var(--white);
+            border: 1px solid rgba(255,255,255,0.1); padding: 14px 28px; border-radius: 50px;
+            font-family: 'Montserrat'; font-weight: 700; text-transform: uppercase; font-size: 0.8rem;
+            letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 999; transition: var(--transition); display: flex; align-items: center; gap: 10px;
+        }
+        .btn-floating-contact:hover { background: var(--mango); color: var(--dark); border-color: var(--mango); transform: translateY(-3px); }
+
+        @media (max-width: 992px) {
+            .hamburger { display: flex; }
+            .nav-links { position: fixed; top: 0; left: 100%; width: 100%; height: 100vh; background: rgba(10,10,10,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); flex-direction: column; justify-content: center; transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+            .nav-links.active { left: 0; }
+            .nav-tab { font-size: 1.5rem; margin-bottom: 20px; padding: 10px; }
+            .nav-tab::before { display: none; }
+            .nav-tab.active { color: var(--mango); background: transparent; }
+            .esencia-grid, .grid-2 { grid-template-columns: 1fr; }
+            .sub-tab { padding: 12px 20px; font-size: 0.8rem; }
+            .btn-floating-contact { bottom: 20px; right: 20px; padding: 12px 22px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body class="lang-es"> 
+    
+    <nav id="navbar">
+        <a href="#" class="logo">
+            <img src="mbc.png" alt="Mango BC Logo">
+        </a>
+        <div class="hamburger" id="hamburger">
+            <span></span><span></span><span></span>
+        </div>
+        
+        <div class="nav-links" id="nav-links">
+            <button class="nav-tab active" data-target="tab-corporativo">
+                <span class="es-text">Sobre Nosotros</span><span class="en-text">About Us</span>
+            </button>
+            <button class="nav-tab" data-target="tab-negocios">
+                <span class="es-text">Centro de Negocios</span><span class="en-text">Business Center</span>
+            </button>
+            <button class="nav-tab" data-target="tab-comunidad">
+                <span class="es-text">Comunidad Mango</span><span class="en-text">Mango Community</span>
+            </button>
+            <button class="nav-tab" data-target="tab-contacto" id="nav-tab-contacto">
+                <span class="es-text">Contacto</span><span class="en-text">Contact</span>
+            </button>
+            <button class="lang-switch" id="langToggle">EN</button>
+        </div>
+    </nav>
+
+    <header class="hero-fullscreen" id="hero-view">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="nuevovideo.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <img src="mbc.png" alt="Mango BC" class="hero-logo-large">
+            <div class="hero-buttons-container">
+                <button class="scroll-down-btn hero-tab-btn" data-target="tab-corporativo">
+                    <span class="es-text">Sobre Nosotros</span><span class="en-text">About Us</span>
+                </button>
+                <button class="scroll-down-btn hero-tab-btn" data-target="tab-negocios">
+                    <span class="es-text">Centro de Negocios</span><span class="en-text">Business Center</span>
+                </button>
+                <button class="scroll-down-btn hero-tab-btn" data-target="tab-comunidad">
+                    <span class="es-text">Comunidad Mango</span><span class="en-text">Mango Community</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container" id="dashboard-view">
+
+        <section id="tab-corporativo" class="tab-content active">
+            <div class="sub-nav-wrapper reveal">
+                <button class="sub-tab active" data-sub="corp-esencia"><span class="es-text">Esencia y Filosofía</span><span class="en-text">Philosophy</span></button>
+                <button class="sub-tab" data-sub="corp-infra"><span class="es-text">Infraestructura & Logística</span><span class="en-text">Infrastructure & Logistics</span></button>
+                <button class="sub-tab" data-sub="corp-equipo"><span class="es-text">Equipo Directivo</span><span class="en-text">Executive Team</span></button>
+            </div>
+
+            <div id="corp-esencia" class="sub-content active">
+                <div class="grid-2 reveal">
+                    <div style="display: flex; flex-direction: column; justify-content: center; padding-right: 20px;">
+                        <h2 style="font-family: 'Montserrat'; font-size: clamp(2.5rem, 3.5vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 25px; letter-spacing: -1px; color: var(--theme-text);">
+                            <span class="es-text">Quiénes</span><span class="en-text">Who we</span> <br><span style="color: var(--mango);"><span class="es-text">Somos</span><span class="en-text">are</span></span>
+                        </h2>
+                        <p class="es-text" style="font-size: 1.1rem; line-height: 1.7; color: var(--theme-text-muted); margin-bottom: 20px; font-weight: 600;">Somos una empresa Mexicana especializada en la industria alimenticia. Producimos y comercializamos productos de consumo masivo en <strong style="color: var(--theme-text);">México, Colombia y Estados Unidos</strong> que impulsan el crecimiento de marcas emergentes.</p>
+                        <p class="en-text" style="font-size: 1.1rem; line-height: 1.7; color: var(--theme-text-muted); margin-bottom: 20px; font-weight: 600;">We are a Mexican company specialized in the food industry. We produce and commercialize mass consumption products in <strong style="color: var(--theme-text);">Mexico, Colombia, and the United States</strong> driving emerging brand growth.</p>
+                        <p class="es-text" style="font-size: 1.1rem; line-height: 1.7; color: var(--theme-text-muted); font-weight: 600;">Nuestra misión es simple: impulsamos el crecimiento de marcas líderes, brindando <strong style="color: var(--theme-text);">productos de calidad y accesibles</strong> al consumidor.</p>
+                        <p class="en-text" style="font-size: 1.1rem; line-height: 1.7; color: var(--theme-text-muted); font-weight: 600;">Our mission is simple: we drive the growth of leading brands, providing <strong style="color: var(--theme-text);">quality and accessible products</strong> to the consumer.</p>
+                    </div>
+
+                    <div class="valores-grid">
+                        <div class="valor-card reveal">
+                            <div class="valor-num">01</div>
+                            <h3 class="valor-title"><span class="es-text">Crecimiento con Dirección</span><span class="en-text">Directed Growth</span></h3>
+                            <p class="valor-desc"><span class="es-text">Cada paso estratégico está estrictamente respaldado por análisis de datos.</span><span class="en-text">Every strategic step is strictly backed by data analysis.</span></p>
+                        </div>
+                        <div class="valor-card reveal">
+                            <div class="valor-num">02</div>
+                            <h3 class="valor-title"><span class="es-text">Ejecución Constante</span><span class="en-text">Constant Execution</span></h3>
+                            <p class="valor-desc"><span class="es-text">Accionamos rápido, medimos resultados reales y optimizamos procesos.</span><span class="en-text">We act fast, measure real results, and optimize processes.</span></p>
+                        </div>
+                        <div class="valor-card reveal">
+                            <div class="valor-num">03</div>
+                            <h3 class="valor-title"><span class="es-text">Relaciones a Largo Plazo</span><span class="en-text">Long-Term Relations</span></h3>
+                            <p class="valor-desc"><span class="es-text">Construimos alianzas sólidas. Crecemos cuando nuestros socios crecen.</span><span class="en-text">We build solid alliances. We grow when our partners grow.</span></p>
+                        </div>
+                        <div class="valor-card reveal">
+                            <div class="valor-num">04</div>
+                            <h3 class="valor-title"><span class="es-text">Simplicidad Estratégica</span><span class="en-text">Strategic Simplicity</span></h3>
+                            <p class="valor-desc"><span class="es-text">Hacemos que la logística y los procesos sean altamente accionables.</span><span class="en-text">We make logistics and processes highly actionable.</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="corp-infra" class="sub-content">
+                <div class="grid-2 reveal" style="align-items: center; gap: 60px;">
+                    <div style="display: flex; flex-direction: column; justify-content: center; padding-right: 20px;">
+                        <h3 class="section-title" style="text-align: left; font-size: 3.5rem; margin-bottom: 20px; line-height: 1;">Mango <br><span>Logistics</span></h3>
+                        <p class="section-desc" style="text-align: left; margin-bottom: 35px; font-size: 1.15rem;"><span class="es-text">Llevamos tu marca a los puntos de venta clave. Nuestro <strong>Almacén Freeze</strong> cuenta con tecnología de punta para mantener controles estrictos de cadena de frío, optimizando rutas, costos y tiempos de entrega de última milla a nivel nacional.</span><span class="en-text">We take your brand to key POS. Our <strong>Freeze Warehouse</strong> features cutting-edge technology to maintain strict cold chain controls, optimizing routes, costs, and last-mile delivery times nationwide.</span></p>
+                        
+                        <div class="img-placeholder" style="height: 220px; margin-bottom: 35px; box-shadow: var(--shadow-hover); border: 1px solid var(--theme-border);">
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        </div>
+                        
+                        <div style="text-align: left;">
+                            <a href="mailto:logistica@mangobc.com" class="btn-outline-dark"><span class="es-text">Contactar a Logística</span><span class="en-text">Contact Logistics</span></a>
+                        </div>
+                    </div>
+
+                    <div class="general-card" style="display: flex; flex-direction: column; justify-content: center; height: 100%; padding: 50px 40px; margin-bottom: 0;">
+                        <h3 style="color: var(--mango); font-family: 'Montserrat'; font-size: 2.2rem; margin-bottom: 40px; text-align: center; font-weight: 900; letter-spacing: -1px;"><span class="es-text">Capacidad Industrial</span><span class="en-text">Industrial Capacity</span></h3>
+                        <div class="grid-2" style="text-align: center; gap: 30px;">
+                            <div>
+                                <h4 style="font-size: 3rem; font-family: 'Montserrat'; font-weight: 900; line-height: 1;">+100k</h4>
+                                <p style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; margin-top: 8px; letter-spacing: 1px;"><span class="es-text">PUNTOS DE VENTA</span><span class="en-text">POINTS OF SALE</span></p>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 3rem; font-family: 'Montserrat'; font-weight: 900; line-height: 1;">+1.5M</h4>
+                                <p style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; margin-top: 8px; letter-spacing: 1px;"><span class="es-text">BARRAS AL MES</span><span class="en-text">BARS PER MONTH</span></p>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 3rem; font-family: 'Montserrat'; font-weight: 900; line-height: 1;">+400</h4>
+                                <p style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; margin-top: 8px; letter-spacing: 1px;"><span class="es-text">RUTAS D.</span><span class="en-text">ROUTES</span></p>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 2.2rem; font-family: 'Montserrat'; font-weight: 900; line-height: 1.2;"><span class="es-text">AMÉRICA</span><span class="en-text">AMERICAS</span></h4>
+                                <p style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; margin-top: 8px; letter-spacing: 1px;"><span class="es-text">ALCANCE</span><span class="en-text">REACH</span></p>
+                            </div>
+                        </div>
+                        <div style="background: var(--theme-step-bg); padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; border: 1px solid var(--theme-border);">
+                            <p style="color: var(--mango); font-size: 0.8rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;">Cadenas de confianza</p>
+                            <p style="font-size: 1.05rem; font-weight: 800; letter-spacing: 1px;">OXXO | 7 ELEVEN | CHEDRAUI | SORIANA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="corp-equipo" class="sub-content">
+                <div class="reveal" style="text-align: center; width: 100%;">
+                    <h2 class="section-title" style="margin-bottom: 40px;"><span class="es-text">Equipo</span><span class="en-text">Executive</span> <span><span class="es-text">Directivo</span><span class="en-text">Team</span></span></h2>
+                    <div class="equipo-container-flex">
+                        <div class="equipo-card" style="padding: 0; overflow: hidden;">
+                            <a href="#" target="_blank" rel="noopener" style="text-decoration: none; display: block; padding: 30px; color: inherit;">
+                                <div class="equipo-img-wrapper"><img src="julian.jpg" alt="Julián Díaz" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80'"></div>
+                                <h4 style="font-family: 'Montserrat'; font-size: 1.4rem; font-weight: 900; margin-bottom: 5px;">Julián Díaz</h4>
+                                <p style="color: var(--mango); font-weight: 900; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; background: var(--dark); display: inline-block; padding: 6px 16px; border-radius: 50px; margin-top: 10px;">CEO</p>
+                                <div style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; color: #0077B5;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                    <span class="es-text">Ver Perfil</span><span class="en-text">View Profile</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="equipo-card" style="padding: 0; overflow: hidden;">
+                            <a href="#" target="_blank" rel="noopener" style="text-decoration: none; display: block; padding: 30px; color: inherit;">
+                                <div class="equipo-img-wrapper"><img src="karla.jpg" alt="Karla Arriaga" onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80'"></div>
+                                <h4 style="font-family: 'Montserrat'; font-size: 1.4rem; font-weight: 900; margin-bottom: 5px;">Karla Arriaga</h4>
+                                <p style="color: var(--mango); font-weight: 900; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; background: var(--dark); display: inline-block; padding: 6px 16px; border-radius: 50px; margin-top: 10px;"><span class="es-text">Directora Corporativa</span><span class="en-text">Corporate Director</span></p>
+                                <div style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; color: #0077B5;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                    <span class="es-text">Ver Perfil</span><span class="en-text">View Profile</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-negocios" class="tab-content">
+            <div class="sub-nav-wrapper reveal">
+                <button class="sub-tab active" data-sub="neg-marcas"><span class="es-text">Nuestras Marcas</span><span class="en-text">Our Brands</span></button>
+                <button class="sub-tab" data-sub="neg-paquetes"><span class="es-text">Paquetes Comerciales</span><span class="en-text">Commercial Packages</span></button>
+                <button class="sub-tab" data-sub="neg-concesion"><span class="es-text">Modelo Concesión</span><span class="en-text">Concession Model</span></button>
+                <button class="sub-tab" data-sub="neg-maquila"><span class="es-text">Marca Propia / Maquila</span><span class="en-text">Private Label</span></button>
+                <button class="sub-tab" data-sub="neg-presentaciones"><span class="es-text">Presentaciones</span><span class="en-text">Presentations</span></button>
+            </div>
+
+            <div id="neg-marcas" class="sub-content active">
+                <h2 class="section-title reveal" style="margin-bottom: 40px;"><span class="es-text">Nuestras</span><span class="en-text">Our</span> <span><span class="es-text">Marcas</span><span class="en-text">Brands</span></span></h2>
+                <div class="marcas-grid reveal">
+                    <div class="marca-dark-card">
+                        <p class="marca-cat"><span class="es-text">BARRAS Y SNACKS</span><span class="en-text">BARS & SNACKS</span></p>
+                        <div class="marca-img-wrapper">
+                            <img src="1mg.jpg" alt="Deli Barras" class="img-main" onerror="this.style.display='none'">
+                            <img src="2mg.jpg" alt="Deli Barras Info" class="img-hover" onerror="this.style.display='none'">
+                            <div class="img-placeholder" style="position: absolute; z-index: -1;">DELI BARRAS</div>
+                        </div>
+                        <h4 class="marca-title">DELI BARRAS</h4>
+                        <p class="marca-desc"><span class="es-text">El equilibrio perfecto entre sabor y nutrición. Alta rotación comprobada.</span><span class="en-text">Perfect balance of flavor and nutrition. Proven high rotation.</span></p>
+                        <a href="Deli.html" class="btn-distribucion"><span class="es-text">VER CATÁLOGO</span><span class="en-text">VIEW CATALOG</span></a>
+                    </div>
+                    <div class="marca-dark-card">
+                        <p class="marca-cat"><span class="es-text">CONDIMENTOS</span><span class="en-text">CONDIMENTS</span></p>
+                        <div class="marca-img-wrapper">
+                            <img src="SABOR-MÍO-UNO.jpg" alt="Sabor Mío" class="img-main" onerror="this.style.display='none'">
+                            <img src="SABOR-MÍO-DOS.jpg" alt="Sabor Mío Info" class="img-hover" onerror="this.style.display='none'">
+                            <div class="img-placeholder" style="position: absolute; z-index: -1;">SABOR MÍO</div>
+                        </div>
+                        <h4 class="marca-title">SABOR Mío</h4>
+                        <p class="marca-desc"><span class="es-text">Empanizadores y mezclas industriales de alta gama para Retail y Food Service.</span><span class="en-text">High-end breading and industrial blends for Retail and Food Service.</span></p>
+                        <a href="Sabormio.html" class="btn-distribucion"><span class="es-text">VER CATÁLOGO</span><span class="en-text">VIEW CATALOG</span></a>
+                    </div>
+                    <div class="marca-dark-card">
+                        <p class="marca-cat"><span class="es-text">GALLETAS</span><span class="en-text">COOKIES</span></p>
+                        <div class="marca-img-wrapper">
+                            <img src="CAMPESINAS-UNO.jpg" alt="Campesinas" class="img-main" onerror="this.style.display='none'">
+                            <img src="CAMPESINAS-DOS.jpg" alt="Campesinas Info" class="img-hover" onerror="this.style.display='none'">
+                            <div class="img-placeholder" style="position: absolute; z-index: -1;">CAMPESINAS</div>
+                        </div>
+                        <h4 class="marca-title">CAMPESINAS</h4>
+                        <p class="marca-desc"><span class="es-text">Repostería premium y galletas de receta tradicional empacadas para alta rotación.</span><span class="en-text">Premium pastries and traditional recipe cookies packed for high rotation.</span></p>
+                        <a href="Campesinas.html" class="btn-distribucion"><span class="es-text">VER CATÁLOGO</span><span class="en-text">VIEW CATALOG</span></a>
+                    </div>
+                    <div class="marca-dark-card">
+                        <p class="marca-cat"><span class="es-text">DULCERÍA</span><span class="en-text">SWEETS</span></p>
+                        <div class="marca-img-wrapper">
+                            <img src="nanna-uno.jpg" alt="Nanná" class="img-main" onerror="this.style.display='none'">
+                            <img src="nanna-dos.jpg" alt="Nanná Info" class="img-hover" onerror="this.style.display='none'">
+                            <div class="img-placeholder" style="position: absolute; z-index: -1;">NANNÁ</div>
+                        </div>
+                        <h4 class="marca-title">NANNÁ</h4>
+                        <p class="marca-desc"><span class="es-text">Sabor auténtico. Panqués, galletas y waffles listos para exhibición masiva.</span><span class="en-text">Authentic taste. Pound cakes, cookies, and waffles ready for display.</span></p>
+                        <a href="nanna.html" class="btn-distribucion"><span class="es-text">VER CATÁLOGO</span><span class="en-text">VIEW CATALOG</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="neg-paquetes" class="sub-content">
+                <div class="reveal" style="max-width: 1000px; margin: 0 auto; width: 100%;">
+                    <h3 class="section-title" style="font-size: 2.8rem; margin-bottom: 15px;"><span class="es-text">Paquetes por Marca</span><span class="en-text">Brand Packages</span></h3>
+                    <p class="section-desc" style="margin-bottom: 50px;"><span class="es-text">Adaptamos nuestro portafolio de alta rotación a tu capacidad operativa. Ya sea un punto de venta o una red de distribución a gran escala.</span><span class="en-text">We adapt our high-rotation portfolio to your operational capacity. Whether a single POS or a large-scale distribution network.</span></p>
+                    
+                    <div class="grid-2">
+                        <div class="general-card" style="margin-bottom: 0;">
+                            <span style="display:inline-block; padding: 6px 12px; background: var(--theme-step-bg); color: var(--theme-text); font-weight: 900; border-radius: 6px; margin-bottom: 15px; font-size: 0.75rem; letter-spacing: 1px;">NIVEL 1</span>
+                            <h4 style="font-family: 'Montserrat'; font-weight: 900; margin-bottom: 20px; font-size: 1.4rem; line-height: 1.2;"><span class="es-text">Punto de Venta / Emprendedor</span><span class="en-text">Point of Sale / Entrepreneur</span></h4>
+                            <ul style="color: var(--theme-text-muted); padding-left: 20px; line-height: 1.8; font-size: 0.95rem; font-weight: 600; margin-bottom: 20px;">
+                                <li><span class="es-text">Ideal para tiendas de conveniencia.</span><span class="en-text">Ideal for convenience stores.</span></li>
+                                <li><span class="es-text">Kits iniciales de baja inversión.</span><span class="en-text">Low-investment starter kits.</span></li>
+                                <li><span class="es-text">Incluye material POP básico.</span><span class="en-text">Includes basic POP material.</span></li>
+                            </ul>
+                        </div>
+                        <div style="background: var(--dark); color: var(--white); padding: 40px; border-radius: var(--radius); box-shadow: 0 15px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+                            <span style="display:inline-block; padding: 6px 12px; background: var(--mango); color: var(--dark); font-weight: 900; border-radius: 6px; margin-bottom: 15px; font-size: 0.75rem; letter-spacing: 1px; position: relative; z-index: 1;">NIVEL 2</span>
+                            <h4 style="font-family: 'Montserrat'; font-weight: 900; color: var(--white); margin-bottom: 20px; font-size: 1.4rem; line-height: 1.2; position: relative; z-index: 1;"><span class="es-text">Distribuidor Mayorista / Retail</span><span class="en-text">Wholesale Distributor / Retail</span></h4>
+                            <ul style="color: #CCC; padding-left: 20px; line-height: 1.8; font-size: 0.95rem; font-weight: 600; margin-bottom: 20px; position: relative; z-index: 1;">
+                                <li><span class="es-text">Volumen a escala retail garantizado.</span><span class="en-text">Guaranteed retail-scale volume.</span></li>
+                                <li><span class="es-text">Márgenes de ganancia agresivos.</span><span class="en-text">Aggressive profit margins.</span></li>
+                                <li><span class="es-text">Logística dedicada B2B.</span><span class="en-text">Dedicated B2B logistics.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 40px;">
+                        <a href="distribuidores.html" class="btn-mango"><span class="es-text">Ir a Portal de Distribuidores</span><span class="en-text">Go to Distributors Portal</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="neg-concesion" class="sub-content">
+                <div class="reveal" style="max-width: 1000px; margin: 0 auto; width: 100%;">
+                    <div style="text-align: center; margin-bottom: 50px;">
+                        <h3 class="section-title"><span class="es-text">Modelo de</span><span class="en-text">Concession</span> <span><span class="es-text">Concesión</span><span class="en-text">Model</span></span></h3>
+                        <p class="section-desc" style="max-width: 800px;"><span class="es-text">Escala rápido y vende desde el primer día, superando las barreras de una franquicia tradicional mediante flexibilidad comercial y alto soporte operativo.</span><span class="en-text">Scale fast and sell from day one, overcoming traditional franchise barriers through commercial flexibility and high operational support.</span></p>
+                    </div>
+                    
+                    <div class="grid-3" style="margin-bottom: 50px;">
+                        <div class="general-card" style="padding: 30px 20px; text-align: center; margin-bottom: 0;">
+                            <div style="width: 45px; height: 45px; background: var(--dark); color: var(--mango); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat'; font-weight: 900; font-size: 1.2rem; margin: 0 auto 15px auto;">01</div>
+                            <h4 style="font-family: 'Montserrat'; font-weight: 900; font-size: 1.1rem; margin-bottom: 10px;"><span class="es-text">Ventaja Financiera</span><span class="en-text">Financial Advantage</span></h4>
+                            <p style="color: var(--theme-text-muted); font-size: 0.9rem; font-weight: 600; line-height: 1.6;"><span class="es-text"><strong>Cero cuota de franquicia.</strong> Tu capital va directo a inventario con ROI acelerado.</span><span class="en-text"><strong>Zero franchise fee.</strong> Your capital goes straight to inventory with accelerated ROI.</span></p>
+                        </div>
+                        <div class="general-card" style="padding: 30px 20px; text-align: center; margin-bottom: 0;">
+                            <div style="width: 45px; height: 45px; background: var(--dark); color: var(--mango); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat'; font-weight: 900; font-size: 1.2rem; margin: 0 auto 15px auto;">02</div>
+                            <h4 style="font-family: 'Montserrat'; font-weight: 900; font-size: 1.1rem; margin-bottom: 10px;"><span class="es-text">Soporte 360°</span><span class="en-text">360° Support</span></h4>
+                            <p style="color: var(--theme-text-muted); font-size: 0.9rem; font-weight: 600; line-height: 1.6;"><span class="es-text">Fácil operación. Capacitación constante, software POS y abastecimiento seguro.</span><span class="en-text">Easy operation. Constant training, POS software, and secure supply.</span></p>
+                        </div>
+                        <div class="general-card" style="padding: 30px 20px; text-align: center; margin-bottom: 0;">
+                            <div style="width: 45px; height: 45px; background: var(--dark); color: var(--mango); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat'; font-weight: 900; font-size: 1.2rem; margin: 0 auto 15px auto;">03</div>
+                            <h4 style="font-family: 'Montserrat'; font-weight: 900; font-size: 1.1rem; margin-bottom: 10px;"><span class="es-text">Exclusividad</span><span class="en-text">Exclusivity</span></h4>
+                            <p style="color: var(--theme-text-muted); font-size: 0.9rem; font-weight: 600; line-height: 1.6;"><span class="es-text">Comercialización protegida. Perfil: Inversionista activo con capacidad de bodegaje.</span><span class="en-text">Protected commercialization. Profile: Active investor with warehousing capacity.</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="general-card" style="text-align: center; background: rgba(253,234,20,0.1); padding: 40px; border-color: rgba(253,234,20,0.3);">
+                        <h4 style="font-family: 'Montserrat'; font-weight: 900; margin-bottom: 15px; font-size: 1.4rem;"><span class="es-text">¿Listo para expandir tu territorio?</span><span class="en-text">Ready to expand your territory?</span></h4>
+                        <a href="mailto:ventas@mangobc.com" class="btn-mango"><span class="es-text">Solicitar Dossier</span><span class="en-text">Request Dossier</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="neg-maquila" class="sub-content">
+                <div class="grid-2 reveal" style="align-items: center; gap: 60px; max-width: 1100px; margin: 0 auto;">
+                    <div style="padding-right: 20px;">
+                        <h3 class="section-title" style="text-align: left; font-size: 3rem; margin-bottom: 25px; line-height: 1.1;"><span class="es-text">Marca Propia <br>& Maquila</span><span class="en-text">Private Label <br>& Maquila</span></h3>
+                        <p class="section-desc" style="text-align: left; margin-bottom: 35px; font-size: 1.1rem;"><span class="es-text">Ponemos nuestras plantas a tu servicio. Desarrollamos tu línea de productos con total confidencialidad y eficiencia para Retail y Food Service.</span><span class="en-text">We put our plants at your service. We develop your product line with total confidentiality and efficiency for Retail and Food Service.</span></p>
+                        
+                        <ul style="color: var(--theme-text); padding-left: 20px; margin-bottom: 40px; line-height: 2.2; font-size: 1.05rem; font-weight: 700;">
+                            <li><span class="es-text">Desarrollo de fórmulas a la medida.</span><span class="en-text">Custom formula development.</span></li>
+                            <li><span class="es-text">Producción directa desde planta.</span><span class="en-text">Direct production from the plant.</span></li>
+                            <li><span class="es-text">Diferenciación garantizada en anaquel.</span><span class="en-text">Guaranteed differentiation on the shelf.</span></li>
+                        </ul>
+                        <a href="Retail.html" class="btn-mango"><span class="es-text">Desarrollar mi marca</span><span class="en-text">Develop my brand</span></a>
+                    </div>
+                    
+                    <div class="general-card" style="padding: 0; width: 100%; aspect-ratio: 1/1; margin-bottom: 0;">
+                        <div class="img-placeholder" style="border-radius: calc(var(--radius) - 2px);">
+                            <img src="tu_imagen_aqui.jpg" alt="Línea de producción" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" style="width: 100%; height: 100%; object-fit: cover;">
+                            <svg style="display:none;" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="neg-presentaciones" class="sub-content">
+                <div class="reveal" style="max-width: 1000px; margin: 0 auto; width: 100%;">
+                    <h3 class="section-title" style="font-size: 2.5rem; margin-bottom: 10px;">
+                        <span class="es-text">Presentaciones de Marca</span>
+                        <span class="en-text">Brand Presentations</span>
+                    </h3>
+                    <p class="section-desc" style="margin-bottom: 40px;">Descarga la información comercial detallada (PDF) para integrarla a tu catálogo.</p>
+                    
+                    <div class="presentaciones-grid">
+                        <div class="pdf-card">
+                            <div class="pdf-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 18 15 15"></polyline></svg></div>
+                            <h4 class="pdf-title">Deli Barras</h4>
+                            <a href="#" download class="btn-outline-dark" style="padding: 10px; width: 100%; font-size: 0.75rem;"><span class="es-text">Descargar PDF</span><span class="en-text">Download PDF</span></a>
+                        </div>
+                        <div class="pdf-card">
+                            <div class="pdf-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 18 15 15"></polyline></svg></div>
+                            <h4 class="pdf-title">Sabor Mío</h4>
+                            <a href="#" download class="btn-outline-dark" style="padding: 10px; width: 100%; font-size: 0.75rem;"><span class="es-text">Descargar PDF</span><span class="en-text">Download PDF</span></a>
+                        </div>
+                        <div class="pdf-card">
+                            <div class="pdf-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 18 15 15"></polyline></svg></div>
+                            <h4 class="pdf-title">Campesinas</h4>
+                            <a href="#" download class="btn-outline-dark" style="padding: 10px; width: 100%; font-size: 0.75rem;"><span class="es-text">Descargar PDF</span><span class="en-text">Download PDF</span></a>
+                        </div>
+                        <div class="pdf-card">
+                            <div class="pdf-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 18 15 15"></polyline></svg></div>
+                            <h4 class="pdf-title">Nanná</h4>
+                            <a href="#" download class="btn-outline-dark" style="padding: 10px; width: 100%; font-size: 0.75rem;"><span class="es-text">Descargar PDF</span><span class="en-text">Download PDF</span></a>
+                        </div>
+                        <div class="pdf-card">
+                            <div class="pdf-icon" style="background: var(--dark); color: var(--mango);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 18 15 15"></polyline></svg></div>
+                            <h4 class="pdf-title">FibraMax</h4>
+                            <a href="#" download class="btn-outline-dark" style="padding: 10px; width: 100%; font-size: 0.75rem;"><span class="es-text">Descargar PDF</span><span class="en-text">Download PDF</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-comunidad" class="tab-content">
+            <div class="sub-nav-wrapper reveal">
+                <button class="sub-tab active" data-sub="com-cultura"><span class="es-text">Cultura y Testimonios</span><span class="en-text">Culture & Testimonials</span></button>
+                <button class="sub-tab" data-sub="com-talento"><span class="es-text">Bolsa de Trabajo</span><span class="en-text">Careers</span></button>
+            </div>
+
+            <div id="com-cultura" class="sub-content active">
+                <div class="grid-2 reveal" style="align-items: center; gap: 60px; margin-bottom: 60px;">
+                    <div style="padding-right: 20px;">
+                        <span style="font-size: 6rem; color: var(--theme-border); font-family: serif; line-height: 0.5; display: block; margin-bottom: 20px;">"</span>
+                        <p class="es-text" style="font-style: italic; color: var(--theme-text); font-size: 1.25rem; line-height: 1.8; font-weight: 600; margin-bottom: 25px;">El nivel de automatización y el enfoque en calidad industrial que hemos logrado me enorgullece. Realmente ves el impacto de tu trabajo en los estantes a nivel nacional.</p>
+                        <p class="en-text" style="font-style: italic; color: var(--theme-text); font-size: 1.25rem; line-height: 1.8; font-weight: 600; margin-bottom: 25px;">The level of automation and industrial quality focus we have achieved makes me proud. You truly see the impact of your work on shelves nationwide.</p>
+                        <h4 style="font-family: 'Montserrat'; font-weight: 900; font-size: 0.9rem; color: var(--mango); text-transform: uppercase; letter-spacing: 1px;"><span class="es-text">Colaborador de Planta (5+ años)</span><span class="en-text">Plant Collaborator (5+ years)</span></h4>
+                    </div>
+                    
+                    <div class="general-card" style="padding: 0; height: 350px; margin-bottom: 0;">
+                        <div class="img-placeholder" style="border-radius: calc(var(--radius) - 2px);">
+                             <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal" style="text-align: center;">
+                    <h3 class="section-title" style="font-size: 2.8rem; margin-bottom: 15px;">Mango <span>Life</span></h3>
+                    <p class="section-desc" style="margin-bottom: 40px;"><span class="es-text">Síguenos en redes para conocer el día a día en Mango.</span><span class="en-text">Follow us to see our daily corporate life.</span></p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div class="general-card" style="padding: 0; aspect-ratio: 1/1; margin-bottom: 0;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="gentecita3.jpg" alt="Mango Life 1" style="width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px);">
+                        </div>
+                        <div class="general-card" style="padding: 0; aspect-ratio: 1/1; margin-bottom: 0;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="gentecita5.jpg" alt="Mango Life 2" style="width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px);">
+                        </div>
+                        <div class="general-card" style="padding: 0; aspect-ratio: 1/1; margin-bottom: 0;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="gentecita2.jpg" alt="Mango Life 3" style="width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px);">
+                        </div>
+                        <div class="general-card" style="padding: 0; aspect-ratio: 1/1; margin-bottom: 0;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <img src="lol-5.jpg" alt="Mango Life 4" style="width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px);">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 40px; display: flex; justify-content: center; gap: 15px;">
+                        <a href="https://www.instagram.com/mangobusinesscenter" target="_blank" class="btn-outline-dark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> Instagram</a>
+                        <a href="https://www.linkedin.com/company/mango-business-center" target="_blank" class="btn-outline-dark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg> LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="com-talento" class="sub-content">
+                <div class="grid-2 reveal">
+                    <div style="padding-right: 20px;">
+                        <h3 class="section-title" style="text-align: left; font-size: 2.5rem; margin-bottom: 30px;"><span class="es-text">Vacantes</span> <span><span class="es-text">Disponibles</span><span class="en-text">Open Positions</span></span></h3>
+                        
+                        <div class="job-card" onclick="this.classList.toggle('open')">
+                            <div class="job-header">
+                                <div>
+                                    <h4><span class="es-text">Ejecutivo de Cuentas Retail</span><span class="en-text">Retail Account Executive</span></h4>
+                                    <p><span class="es-text">Morelia | Tiempo Completo</span><span class="en-text">Morelia | Full Time</span></p>
+                                </div>
+                                <div class="toggle-icon">+</div>
+                            </div>
+                            <div class="job-details">
+                                <strong><span class="es-text">Descripción</span><span class="en-text">Description</span></strong>
+                                <p><span class="es-text">Gestión de cuentas clave en canales de retail moderno. Buscamos a alguien capaz de mantener relaciones a largo plazo y proponer estrategias de crecimiento.</span><span class="en-text">Managing key accounts in modern retail channels. We look for someone capable of maintaining long-term relationships and proposing growth strategies.</span></p>
+                                <strong><span class="es-text">Requisitos</span><span class="en-text">Requirements</span></strong>
+                                <p><span class="es-text">Lic. en Administration, Mercadotecnia o afín. Mínimo 2 años de experiencia en ventas retail.</span><span class="en-text">Degree in Administration, Marketing or similar. Minimum 2 years of experience in retail sales.</span></p>
+                            </div>
+                        </div>
+
+                        <div class="job-card" onclick="this.classList.toggle('open')">
+                            <div class="job-header">
+                                <div>
+                                    <h4><span class="es-text">Coordinador Logístico</span><span class="en-text">Logistics Coordinator</span></h4>
+                                    <p><span class="es-text">Morelia | Tiempo Completo</span><span class="en-text">Morelia | Full Time</span></p>
+                                </div>
+                                <div class="toggle-icon">+</div>
+                            </div>
+                            <div class="job-details">
+                                <strong><span class="es-text">Descripción</span><span class="en-text">Description</span></strong>
+                                <p><span class="es-text">Coordinarás rutas, flotillas y te asegurarás de mantener la eficiencia en los tiempos de entrega (última milla) y cadena de frío.</span><span class="en-text">You will coordinate routes, fleets, and ensure efficiency in delivery times (last mile) and cold chain.</span></p>
+                                <strong><span class="es-text">Requisitos</span><span class="en-text">Requirements</span></strong>
+                                <p><span class="es-text">Ing. Industrial, Logística o afín. Manejo de Excel avanzado y sistemas ERP.</span><span class="en-text">Degree in Industrial Engineering, Logistics or similar. Advanced Excel and ERP systems.</span></p>
+                            </div>
+                        </div>
+
+                        <div class="job-card" onclick="this.classList.toggle('open')">
+                            <div class="job-header">
+                                <div>
+                                    <h4><span class="es-text">Desarrollador de Concesiones</span><span class="en-text">Concessions Developer</span></h4>
+                                    <p><span class="es-text">Morelia | Tiempo Completo</span><span class="en-text">Morelia | Full Time</span></p>
+                                </div>
+                                <div class="toggle-icon">+</div>
+                            </div>
+                            <div class="job-details">
+                                <strong><span class="es-text">Descripción</span><span class="en-text">Description</span></strong>
+                                <p><span class="es-text">Expansión del modelo de negocio. Perfilarás a posibles inversionistas y guiarás la correcta implementación en nuevas sucursales.</span><span class="en-text">Business model expansion. You will profile potential investors and guide the correct implementation in new branches.</span></p>
+                                <strong><span class="es-text">Requisitos</span><span class="en-text">Requirements</span></strong>
+                                <p><span class="es-text">Experiencia en venta de intangibles, bienes raíces o modelos de franquicia.</span><span class="en-text">Experience in sales of intangibles, real estate, or franchise models.</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="general-card-dark" style="height: fit-content; position: sticky; top: 100px; padding: 40px; margin-bottom: 0;">
+                        <h3 style="color: var(--mango); font-family: 'Montserrat'; font-weight: 900; font-size: 1.8rem; margin-bottom: 15px;"><span class="es-text">Postúlate</span><span class="en-text">Apply directly</span></h3>
+                        <form style="display: flex; flex-direction: column;" action="https://formspree.io/f/TU_CORREO_FORMSPRERE" method="POST" enctype="multipart/form-data">
+                            <input type="text" name="nombre" class="form-input lang-input" data-es-placeholder="Nombre Completo" data-en-placeholder="Full Name" placeholder="Nombre Completo" required>
+                            <input type="email" name="correo" class="form-input lang-input" data-es-placeholder="Correo Electrónico" data-en-placeholder="Email Address" placeholder="Correo Electrónico" required>
+                            <select name="vacante" class="form-input" required style="color: #FFF;">
+                                <option value="" disabled selected class="es-text">Selecciona una vacante...</option>
+                                <option value="Ejecutivo de Cuentas Retail">Ejecutivo de Cuentas Retail</option>
+                                <option value="Coordinador Logístico">Coordinador Logístico</option>
+                                <option value="Desarrollador Concesiones">Desarrollador de Concesiones</option>
+                                <option value="Postulación General">Postulación General / General Application</option>
+                            </select>
+                            <label style="font-size: 0.85rem; font-weight: 900; color: var(--mango); margin: 0 0 8px 5px; text-transform: uppercase; letter-spacing: 1px;"><span class="es-text">Adjuntar CV (PDF):</span><span class="en-text">Attach Resume (PDF):</span></label>
+                            <input type="file" name="cv_file" accept=".pdf" required style="font-size: 0.9rem; color: #CCC; margin-bottom: 25px; padding-left: 5px; font-weight: 600;">
+                            <button type="submit" class="btn-mango" style="width: 100%; padding: 15px;"><span class="es-text">Enviar Postulación</span><span class="en-text">Submit Application</span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-contacto" class="tab-content">
+            <div class="reveal" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 20px 25px 60px 25px;">
+                
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <img src="mbc.png" alt="Mango BC" style="height: 60px; filter: brightness(0) invert(1); margin-bottom: 15px;">
+                    <h2 class="section-title" style="font-size: clamp(2.5rem, 4vw, 3.5rem); margin-bottom: 10px;">
+                        <span class="es-text">Ponte en</span><span class="en-text">Get in</span> 
+                        <span style="color: var(--mango);"><span class="es-text">Contacto</span><span class="en-text">Touch</span></span>
+                    </h2>
+                    <p class="section-desc"><span class="es-text">Estamos listos para llevar tu negocio al siguiente nivel.</span><span class="en-text">We are ready to take your business to the next level.</span></p>
+                </div>
+                
+                <div class="general-card-dark" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px; padding: 50px; margin-bottom: 40px; box-shadow: var(--shadow-hover);">
+                    
+                    <div style="display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 20px;">
+                        <h4 style="font-family: 'Montserrat'; font-weight: 900; color: var(--mango); font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Sede Central / HQ</h4>
+                        <p style="color: var(--theme-text); font-size: 1.15rem; line-height: 1.8; font-weight: 600; margin-bottom: 30px;">
+                            Morelia, Michoacán<br>México, CP 58000
+                        </p>
+                        <a href="https://wa.me/524433327430" target="_blank" rel="noopener" class="btn-mango" style="background: #25D366; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: fit-content; padding: 16px 30px; border-radius: 50px; font-family: 'Montserrat'; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                            </svg>
+                            <span class="es-text">WhatsApp</span><span class="en-text">WhatsApp</span>
+                        </a>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 25px; justify-content: center;">
+                        <div>
+                            <h5 style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;"><span class="es-text">Ventas LATAM / USA</span><span class="en-text">LATAM / USA Sales</span></h5>
+                            <a href="mailto:asantoyo@mangobc.com" style="color: var(--white); text-decoration: none; font-size: 1.15rem; font-family: 'Montserrat'; font-weight: 700; transition: color 0.3s ease;" onmouseover="this.style.color='var(--mango)'" onmouseout="this.style.color='var(--white)'">asantoyo@mangobc.com</a>
+                        </div>
+                        <div>
+                            <h5 style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Mango Logistics</h5>
+                            <a href="mailto:logistica@mangobc.com" style="color: var(--white); text-decoration: none; font-size: 1.15rem; font-family: 'Montserrat'; font-weight: 700; transition: color 0.3s ease;" onmouseover="this.style.color='var(--mango)'" onmouseout="this.style.color='var(--white)'">logistica@mangobc.com</a>
+                        </div>
+                        <div>
+                            <h5 style="color: var(--theme-text-muted); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;"><span class="es-text">Talento & Proveedores</span><span class="en-text">Talent & Suppliers</span></h5>
+                            <a href="mailto:talento@mangobc.com" style="color: var(--white); text-decoration: none; font-size: 1.15rem; font-family: 'Montserrat'; font-weight: 700; transition: color 0.3s ease;" onmouseover="this.style.color='var(--mango)'" onmouseout="this.style.color='var(--white)'">talento@mangobc.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <a href="https://www.linkedin.com/company/mango-business-center" target="_blank" class="btn-outline-dark" style="padding: 12px 25px; font-size: 0.8rem; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg> LinkedIn
+                    </a>
+                    <a href="https://www.instagram.com/mangobusinesscenter" target="_blank" class="btn-outline-dark" style="padding: 12px 25px; font-size: 0.8rem; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> Instagram
+                    </a>
+                    <a href="https://www.facebook.com/mangobusinesscenter" target="_blank" class="btn-outline-dark" style="padding: 12px 25px; font-size: 0.8rem; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> Facebook
+                    </a>
+                </div>
+                
+                <div style="text-align: center; font-size: 0.8rem; color: #666; font-weight: 700; letter-spacing: 1px;">
+                    © 2026 MANGO BUSINESS CENTER
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <button class="btn-floating-contact" id="floatingContactBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span class="es-text">Contacto</span><span class="en-text">Contact</span>
+    </button>
+
+    <script>
+        const heroView = document.getElementById('hero-view');
+        const dashboardView = document.getElementById('dashboard-view');
+
+        // REVELAR ELEMENTOS
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.05, root: dashboardView });
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Hamburguesa
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        hamburger.addEventListener('click', () => { navLinks.classList.toggle('active'); });
+
+        // TABS Dashboard Principal 
+        const tabs = document.querySelectorAll('.nav-tab');
+        const sections = document.querySelectorAll('.tab-content');
+
+        function switchMainTab(targetId) {
+            heroView.classList.add('hidden');
+            dashboardView.classList.add('visible');
+
+            tabs.forEach(t => {
+                if(t.getAttribute('data-target') === targetId) {
+                    t.classList.add('active');
+                } else {
+                    t.classList.remove('active');
+                }
+            });
+
+            sections.forEach(s => {
+                if(s.id === targetId) {
+                    s.classList.add('active');
+                    // Resetear el scroll al inicio de la pestaña si se cambia
+                    const scrollableContent = s.querySelector('.sub-content.active');
+                    if(scrollableContent) scrollableContent.scrollTop = 0;
+                    if(s.id === 'tab-contacto') s.scrollTop = 0;
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+
+            navLinks.classList.remove('active'); 
+
+            setTimeout(() => {
+                document.querySelectorAll(`#${targetId} .reveal`).forEach(el => el.classList.add('active'));
+            }, 50);
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchMainTab(tab.getAttribute('data-target'));
+            });
+        });
+
+        // TABS Secundarios (Píldoras internas)
+        const subTabs = document.querySelectorAll('.sub-tab');
+        subTabs.forEach(subTab => {
+            subTab.addEventListener('click', () => {
+                const parentSection = subTab.closest('.tab-content');
+                parentSection.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+                parentSection.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+                
+                subTab.classList.add('active');
+                const targetId = subTab.getAttribute('data-sub');
+                const targetContent = document.getElementById(targetId);
+                targetContent.classList.add('active');
+                targetContent.scrollTop = 0; // Resetear scroll al cambiar de píldora
+            });
+        });
+
+        // Interceptores de clics en los botones del Hero
+        const heroTabBtns = document.querySelectorAll('.hero-tab-btn');
+        heroTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                switchMainTab(targetId);
+            });
+        });
+
+        // Clic en el botón flotante inferior
+        document.getElementById('floatingContactBtn').addEventListener('click', () => {
+            switchMainTab('tab-contacto'); 
+        });
+
+        // LOGO NAVBAR
+        document.querySelector('.logo').addEventListener('click', (e) => {
+            e.preventDefault();
+            heroView.classList.remove('hidden');
+            dashboardView.classList.remove('visible');
+            tabs.forEach(t => t.classList.remove('active'));
+        });
+
+        // LÓGICA DE BILINGÜE
+        const langToggle = document.getElementById('langToggle');
+        if(langToggle) {
+            const userLang = navigator.language || navigator.userLanguage; 
+            let currentLang = userLang.toLowerCase().startsWith('es') ? 'es' : 'en';
+
+            document.body.className += ' lang-' + currentLang;
+            langToggle.innerText = currentLang === 'es' ? 'EN' : 'ES';
+            document.documentElement.lang = currentLang;
+
+            const langInputs = document.querySelectorAll('.lang-input');
+            
+            function updatePlaceholders() {
+                if (currentLang === 'en') {
+                    langInputs.forEach(input => { input.placeholder = input.getAttribute('data-en-placeholder'); });
+                } else {
+                    langInputs.forEach(input => { input.placeholder = input.getAttribute('data-es-placeholder'); });
+                }
+            }
+            updatePlaceholders();
+
+            langToggle.addEventListener('click', () => {
+                document.body.classList.remove('lang-' + currentLang);
+                currentLang = currentLang === 'es' ? 'en' : 'es';
+                document.body.classList.add('lang-' + currentLang);
+                langToggle.innerText = currentLang === 'es' ? 'EN' : 'ES';
+                document.documentElement.lang = currentLang;
+                updatePlaceholders();
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mango BC | Portal de Cerradores</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <style>
+        :root {
+            --mango: #fdea14; 
+            --mango-hover: #e5d312;
+            --dark: #121212;  
+            --dark-secondary: #1E1E1E;
+            --white: #FFFFFF;
+            --light-bg: #F8F9FA; 
+            --border-color: #E2E8F0;
+            --text-main: #334155;
+            --text-muted: #64748B;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 25px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 30px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-main);
+            font-family: 'Open Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            animation: fadeIn 0.8s ease-out;
+            padding-top: 60px; /* Espacio para el navbar */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3, h4, .font-title { font-family: 'Montserrat', sans-serif; }
+
+        /* BANNER PERMISOS NOTIFICACIONES */
+        #bannerNotificaciones {
+            background-color: #3B82F6; color: white; text-align: center; padding: 10px; font-size: 0.9rem; font-weight: 600; display: none; z-index: 2000; position: fixed; top: 0; width: 100%;
+        }
+        #bannerNotificaciones button {
+            background: white; color: #3B82F6; border: none; padding: 5px 15px; border-radius: 4px; font-weight: bold; margin-left: 10px; cursor: pointer; transition: 0.2s;
+        }
+        #bannerNotificaciones button:hover { background: var(--mango); color: var(--dark); }
+
+        nav {
+            position: fixed; width: 100%; top: 0; left: 0;
+            padding: 15px 5%; 
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: top 0.3s; /* Para cuando aparezca el banner */
+        }
+        .logo-text { color: var(--white); font-family: 'Montserrat'; font-weight: 900; font-size: 1.2rem; text-decoration: none; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;}
+        .nav-logo { height: 32px; width: auto; filter: brightness(0) invert(1); transition: var(--transition); }
+        .logo-text:hover .nav-logo { transform: scale(1.05); }
+        .logo-text span { color: var(--mango); }
+        
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: #A0AEC0; text-decoration: none; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition); position: relative; }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--mango); transition: var(--transition); }
+        .nav-links a:hover { color: var(--white); }
+        .nav-links a:hover::after { width: 100%; }
+
+        .dashboard-header {
+            padding: 100px 5% 60px; 
+            background: linear-gradient(135deg, var(--dark) 0%, #2A2D34 100%);
+            color: var(--white);
+            border-bottom: 4px solid var(--mango);
+        }
+        .header-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 30px; }
+        .welcome-text h1 { font-size: clamp(2.5rem, 4vw, 3.5rem); margin-bottom: 12px; line-height: 1.1; letter-spacing: -1px; }
+        .welcome-text p { color: #94A3B8; font-size: 1.15rem; font-weight: 400; }
+        
+        .stats-container { display: flex; gap: 20px; }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 25px 35px; border-radius: 20px; border: 1px solid rgba(253, 234, 20, 0.15); text-align: right; backdrop-filter: blur(5px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
+        .stat-box h3 { color: var(--mango); font-size: 1.8rem; line-height: 1; margin-bottom: 8px; }
+        .stat-box p { color: #CBD5E1; font-size: 0.8rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; }
+
+        section { padding: 60px 5%; max-width: 1400px; margin: 0 auto; }
+        .section-title { font-size: 2rem; font-weight: 900; color: var(--dark); margin-bottom: 30px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 15px;}
+        .section-title::before { content: ''; display: block; width: 6px; height: 30px; background: var(--mango); border-radius: 4px; }
+        
+        .btn-action { cursor:pointer; font-size:0.85rem; font-weight:bold; border-radius:12px; transition: 0.3s; padding: 6px 12px; display: inline-flex; align-items: center; gap: 5px; border: none; font-family: 'Open Sans', sans-serif;}
+        .btn-refresh { color:#10B981; border:1px solid #10B981; background: #ECFDF5; }
+        .btn-refresh:hover { background: #D1FAE5; transform: translateY(-1px); }
+        .btn-add-task { color: var(--dark); border:1px solid var(--mango); background: var(--mango); margin-left: 10px; }
+        .btn-add-task:hover { background: var(--mango-hover); transform: translateY(-1px); }
+
+        /* NOTICIAS */
+        .noticias-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .noticia-card { background: var(--white); border-left: 4px solid #3B82F6; padding: 25px; border-radius: 12px; box-shadow: var(--shadow-sm); transition: var(--transition); }
+        .noticia-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .noticia-fecha { font-size: 0.75rem; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block;}
+        .noticia-titulo { font-family: 'Montserrat'; font-weight: 800; font-size: 1.1rem; color: var(--dark); margin-bottom: 10px; }
+        .noticia-card p { font-size: 0.9rem; color: var(--text-main); line-height: 1.5; }
+        .noticia-card.urgente { border-left-color: #EF4444; }
+
+        /* TABS CERRADORES */
+        .cerrador-tabs { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; border-bottom: 2px solid var(--border-color); }
+        .tab-btn { background: transparent; border: none; font-family: 'Montserrat'; font-weight: 700; font-size: 0.95rem; color: var(--text-muted); cursor: pointer; padding: 10px 20px; border-radius: 8px 8px 0 0; transition: var(--transition); white-space: nowrap; position: relative; }
+        .tab-btn:hover { color: var(--dark); background-color: rgba(0,0,0,0.02); }
+        .tab-btn.active { color: var(--dark); background-color: var(--white); border-bottom: 3px solid var(--mango); box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.02); }
+
+        /* TAREAS / CRM BÁSICO */
+        .crm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; align-items: start;}
+        .tarea-card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; transition: var(--transition); border-left: 4px solid #3B82F6; cursor: pointer; position: relative; overflow: hidden;}
+        .tarea-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); background-color: #F8FAFC;}
+        .tarea-card.completada { border-left-color: #10B981; opacity: 0.6; background-color: #F8FAFC;}
+        .tarea-card.completada .tarea-info h4 { text-decoration: line-through; color: var(--text-muted); }
+        
+        .tarea-info h4 { font-family: 'Montserrat'; font-weight: 700; color: var(--dark); margin-bottom: 5px; font-size: 1.05rem; transition: var(--transition); word-break: break-word; white-space: normal;}
+        .tarea-info p { font-size: 0.85rem; color: #64748B; margin-bottom: 10px; word-break: break-word; }
+        
+        .desc-corta { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+        .tarea-horario { font-size: 0.8rem; background: #F1F5F9; display: inline-block; padding: 4px 8px; border-radius: 4px; color: #334155; font-weight: 600; margin-bottom: 0 !important;}
+        
+        .sin-tareas { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600; font-family: 'Montserrat'; background: var(--white); border-radius: 12px; border: 2px dashed var(--border-color); }
+
+        /* MODALES (General) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 18, 18, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--white); padding: 35px; border-radius: 16px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; position: relative; transform: translateY(20px); transition: var(--transition); box-shadow: var(--shadow-lg); }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: #F1F5F9; border: none; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; color: #64748B; transition: var(--transition); display: flex; justify-content: center; align-items: center; font-size: 1rem;}
+        .modal-close:hover { background: #FEE2E2; color: #EF4444; transform: rotate(90deg);}
+        
+        /* Modal Ver Tarea */
+        .modal-title { font-family: 'Montserrat'; font-weight: 800; font-size: 1.5rem; margin-bottom: 15px; color: var(--dark); word-break: break-word; padding-right: 30px;}
+        .modal-status { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .modal-status.pendiente { background: #DBEAFE; color: #1D4ED8; }
+        .modal-status.completada { background: #D1FAE5; color: #047857; }
+        .modal-body { color: var(--text-main); font-size: 1rem; line-height: 1.7; word-break: break-word; white-space: pre-wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);}
+
+        /* Modal Crear Tarea (Formulario) */
+        .form-row { display: flex; gap: 15px; }
+        .form-row .form-group { flex: 1; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; color: var(--dark); margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Open Sans', sans-serif; font-size: 1rem; color: var(--text-main); transition: var(--transition); }
+        .form-control:focus { border-color: var(--mango); outline: none; box-shadow: 0 0 0 3px rgba(253, 234, 20, 0.2); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+        .btn-submit-form { background: var(--dark); color: var(--mango); font-family: 'Montserrat'; font-weight: 700; border: none; padding: 12px 20px; border-radius: 8px; width: 100%; cursor: pointer; transition: var(--transition); font-size: 1rem; margin-top: 10px;}
+        .btn-submit-form:hover { background: var(--mango); color: var(--dark); }
+        .btn-submit-form:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* COTIZADOR (ESTILO SHEETS) */
+        .cotizador-container { background: var(--white); padding: 30px; border-radius: 20px; box-shadow: var(--shadow-md); overflow-x: auto; }
+        .botones-cotizador { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; align-items: center;}
+        .btn-add { background: var(--dark); color: var(--mango); border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Montserrat'; font-weight: 700; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px;}
+        .btn-add:hover { background: var(--mango); color: var(--dark); }
+        .btn-add:disabled { background: #CBD5E1; color: #64748B; cursor: not-allowed; }
+        
+        .btn-pdf { background: #3B82F6; color: var(--white); border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Montserrat'; font-weight: 700; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px;}
+        .btn-pdf:hover { background: #2563EB; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        
+        .factura-toggle { display: flex; align-items: center; gap: 10px; margin-left: auto; background: #FFFDE7; padding: 10px 15px; border-radius: 8px; border: 1px solid #fdea14; box-shadow: var(--shadow-sm); transition: var(--transition);}
+        .factura-toggle label { font-family: 'Montserrat'; font-weight: 800; font-size: 0.9rem; color: var(--dark); cursor: pointer; user-select: none;}
+        .factura-toggle input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--dark); }
+
+        table.sheet-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .sheet-table th { background: #F1F5F9; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; padding: 12px 15px; text-align: left; border-bottom: 2px solid var(--border-color); }
+        .sheet-table td { padding: 10px 15px; border-bottom: 1px solid var(--border-color); }
+        
+        .sheet-table input, .sheet-table select { width: 100%; border: 1px solid transparent; padding: 8px; border-radius: 4px; font-family: 'Open Sans'; font-size: 0.95rem; color: var(--dark); transition: var(--transition); background: transparent; }
+        .sheet-table select { cursor: pointer; max-width: 500px; text-overflow: ellipsis; }
+        .sheet-table select optgroup { font-family: 'Montserrat'; font-weight: 700; background: #F1F5F9; }
+        .sheet-table input:focus, .sheet-table select:focus { border-color: var(--mango); outline: none; background: #FFFDE7; }
+        .sheet-table input[readonly] { font-weight: 700; color: var(--text-muted); }
+        
+        .btn-remove { background: #FEE2E2; color: #EF4444; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; transition: var(--transition); display: flex; justify-content: center; align-items: center;}
+        .btn-remove:hover { background: #EF4444; color: white; }
+
+        .totales-box { width: 300px; margin-left: auto; margin-top: 20px; background: #F8FAFC; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .totales-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1rem; color: var(--text-main); }
+        .totales-row.gran-total { font-family: 'Montserrat'; font-weight: 800; font-size: 1.5rem; color: var(--dark); border-top: 2px solid var(--border-color); padding-top: 10px; margin-top: 10px; }
+
+        .loader-text { font-size: 0.9rem; color: #3B82F6; font-weight: bold; margin-left: 15px; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .stats-container { width: 100%; }
+            .stat-box { flex: 1; padding: 20px; text-align: left; }
+            .nav-links { display: none; }
+            section { padding: 50px 5%; }
+            .sheet-table select { max-width: 200px; }
+            .factura-toggle { margin-left: 0; width: 100%; justify-content: space-between; }
+            .cerrador-tabs { padding-bottom: 10px; }
+            .modal-content { padding: 25px; }
+            .section-title { flex-wrap: wrap; }
+            .form-row { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bannerNotificaciones">
+        🔔 Para recibir alertas de tus tareas antes de que venzan, por favor activa las notificaciones.
+        <button onclick="solicitarPermisoNotificaciones()">Activar</button>
+    </div>
+
+    <nav id="navbarPrincipal">
+        <a href="index.html" class="logo-text">
+            <img src="mbc.png" alt="Mango BC Logo" class="nav-logo">
+            <span>|</span> Portal Cerradores
+        </a>
+        <div class="nav-links">
+            <a href="#noticias">Noticias</a>
+            <a href="#tareas">Tareas</a>
+            <a href="#cotizador">Cotizador 25%</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="welcome-text">
+                <h1>A cerrar negocios.</h1>
+                <p>Dashboard comercial e información estratégica.</p>
+            </div>
+            <div class="stats-container">
+                <div class="stat-box" id="update-box">
+                    <p>Última Actualización</p>
+                    <h3 id="fecha-actualizacion">Cargando...</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="noticias">
+        <h2 class="section-title">Noticias y Novedades</h2>
+        <div class="noticias-grid">
+            <div class="noticia-card urgente">
+                <span class="noticia-fecha">18 de Mayo, 2026</span>
+                <h3 class="noticia-titulo">🚨 Ajuste de precios en Línea Premium</h3>
+                <p>Atención equipo: A partir de la próxima semana, los productos de la línea Premium tendrán un ajuste del 5%. El cotizador de este portal se actualizará automáticamente.</p>
+            </div>
+            <div class="noticia-card">
+                <span class="noticia-fecha">15 de Mayo, 2026</span>
+                <h3 class="noticia-titulo">Nuevo Bono por Cierre Rápido</h3>
+                <p>Se ha activado un nuevo esquema de comisiones. Todo cierre concretado y pagado en menos de 48 horas desde la cotización inicial, recibirá un bono adicional del 2%.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="tareas">
+        <h2 class="section-title">CRM | Próximas Actividades 
+            <button id="btnActualizarCRM" onclick="cargarTareasCerradorActual()" class="btn-action btn-refresh" title="Recargar información de Google Sheets">🔄 Actualizar</button>
+            <button onclick="abrirModalCrearTarea()" class="btn-action btn-add-task" title="Crear nueva tarea en Sheets">➕ Nueva Tarea</button>
+        </h2>
+        
+        <div class="cerrador-tabs" id="tabsCerradores"></div>
+        <div class="crm-grid" id="crmGrid"></div>
+    </section>
+
+    <section id="cotizador">
+        <h2 class="section-title">Cotizador Dinámico (Base 25%)
+            <button id="btnActualizarCotizador" onclick="cargarDatosDeSheets()" class="btn-action btn-refresh" title="Recargar precios de Google Sheets">🔄 Actualizar</button>
+        </h2>
+        <div class="cotizador-container">
+            <div class="botones-cotizador">
+                <button class="btn-add" id="btnAgregar" onclick="agregarFila()" disabled>+ Agregar Concepto</button>
+                <button class="btn-pdf" onclick="descargarPDF()">📥 Descargar PDF</button>
+                <span id="statusSheets" class="loader-text">Conectando con Google Sheets...</span>
+                
+                <div class="factura-toggle">
+                    <label for="chkFactura">Requiere Factura (+8% aplicable)</label>
+                    <input type="checkbox" id="chkFactura" onchange="actualizarCotizacion()">
+                </div>
+            </div>
+            
+            <table class="sheet-table" id="tablaCotizador">
+                <thead>
+                    <tr>
+                        <th width="10%">Cant.</th>
+                        <th width="50%">Producto / Descripción</th>
+                        <th width="15%">Precio Unit. ($)</th>
+                        <th width="15%">Importe ($)</th>
+                        <th width="10%"></th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoCotizador"></tbody>
+            </table>
+
+            <div class="totales-box">
+                <div class="totales-row gran-total">
+                    <span>Total:</span>
+                    <span id="txtTotal">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="modalTarea" onclick="cerrarModalExterno(event, 'modalTarea')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modalTarea')">✕</button>
+            <div id="modalEstado" class="modal-status"></div>
+            <h3 id="modalTitulo" class="modal-title"></h3>
+            <div id="modalFecha" class="tarea-horario" style="margin-bottom: 10px;"></div>
+            <div id="modalDescripcion" class="modal-body"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalCrearTarea" onclick="cerrarModalExterno(event, 'modalCrearTarea')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modalCrearTarea')">✕</button>
+            <h3 class="modal-title">Crear Nueva Tarea</h3>
+            <p style="font-size: 0.9rem; color: #64748B; margin-bottom: 20px;">Esta tarea se guardará automáticamente en Google Sheets para el cerrador <strong id="lblCerradorDestino"></strong>.</p>
+            
+            <form id="formNuevaTarea" onsubmit="enviarNuevaTarea(event)">
+                <div class="form-group">
+                    <label for="inputTitulo">Título de la Tarea *</label>
+                    <input type="text" id="inputTitulo" class="form-control" required placeholder="Ej: Llamar a cliente X">
+                </div>
+                <div class="form-group">
+                    <label for="inputDesc">Descripción</label>
+                    <textarea id="inputDesc" class="form-control" placeholder="Detalles de la cotización, contexto..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="inputEstado">Estado *</label>
+                    <select id="inputEstado" class="form-control" required>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En progreso">En progreso</option>
+                        <option value="Completada">Completada</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inputFecha">Fecha Límite</label>
+                        <input type="date" id="inputFecha" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputHora">Hora Límite</label>
+                        <input type="time" id="inputHora" class="form-control">
+                    </div>
+                </div>
+                <button type="submit" id="btnEnviarTarea" class="btn-submit-form">Guardar Tarea</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ----- CONFIGURACIÓN GENERAL Y APPS SCRIPT
+        // ==========================================
+        
+        // ¡IMPORTANTE! Pega aquí la URL que obtuviste en el Paso 1 al publicar el script de Google
+        const URL_WEB_APP = 'PÉGA_AQUÍ_TU_URL_DE_APPS_SCRIPT'; 
+
+        const opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('fecha-actualizacion').textContent = new Date().toLocaleDateString('es-ES', opcionesFecha);
+
+        // ==========================================
+        // ----- LÓGICA DE NOTIFICACIONES
+        // ==========================================
+        
+        let tareasParaNotificar = [];
+        let historialNotificaciones = {}; // Aquí guardaremos qué avisos ya se dieron (15, 10, 5)
+
+        function checkPermisoNotificacionesInit() {
+            if ("Notification" in window) {
+                if (Notification.permission === "default") {
+                    document.getElementById('bannerNotificaciones').style.display = 'block';
+                    document.getElementById('navbarPrincipal').style.top = '40px';
+                }
+            }
+        }
+
+        function solicitarPermisoNotificaciones() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        document.getElementById('bannerNotificaciones').style.display = 'none';
+                        document.getElementById('navbarPrincipal').style.top = '0';
+                        new Notification("¡Listo!", { body: "Las notificaciones de Mango BC están activadas." });
+                    }
+                });
+            }
+        }
+
+        function revisarCronometroNotificaciones() {
+            if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+            const ahora = new Date();
+            
+            tareasParaNotificar.forEach(tarea => {
+                const idUnico = tarea.titulo + tarea.fecha + tarea.hora;
+                
+                // Si la tarea es nueva, le creamos su historial vacío
+                if (!historialNotificaciones[idUnico]) {
+                    historialNotificaciones[idUnico] = [];
+                }
+
+                const partesFecha = tarea.fecha.split('-');
+                const partesHora = tarea.hora.split(':');
+                
+                if (partesFecha.length === 3 && partesHora.length === 2) {
+                    const fechaTarea = new Date(
+                        parseInt(partesFecha[0]), 
+                        parseInt(partesFecha[1]) - 1, 
+                        parseInt(partesFecha[2]), 
+                        parseInt(partesHora[0]), 
+                        parseInt(partesHora[1])
+                    );
+
+                    // Calcular la diferencia en minutos
+                    const diffMinutos = (fechaTarea - ahora) / (1000 * 60);
+
+                    // Si faltan 15 minutos o menos (y no ha pasado mucho tiempo desde que venció)
+                    if (diffMinutos <= 15 && diffMinutos > -1) {
+                        
+                        // Determinamos en qué "bloque" de aviso estamos
+                        let hitoActual;
+                        if (diffMinutos > 10) hitoActual = 15;       // Entre 10 y 15 mins
+                        else if (diffMinutos > 5) hitoActual = 10;  // Entre 5 y 10 mins
+                        else if (diffMinutos > 0) hitoActual = 5;   // Entre 0 y 5 mins
+                        else hitoActual = 0;                        // Llegó a 0
+
+                        // Si no hemos mandado la notificación de este bloque de tiempo...
+                        if (!historialNotificaciones[idUnico].includes(hitoActual)) {
+                            
+                            let mensaje = hitoActual === 0 
+                                ? `¡El tiempo ha terminado! La tarea vence ahora mismo.` 
+                                : `Faltan menos de ${hitoActual} minutos.`;
+                            
+                            new Notification("⏰ Recordatorio de CRM", {
+                                body: `${mensaje}\nTarea: ${tarea.titulo}`,
+                            });
+                            
+                            // Registramos que ya mandamos el aviso de este hito para no repetirlo el próximo minuto
+                            historialNotificaciones[idUnico].push(hitoActual);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Revisar cada minuto (60000 ms)
+        setInterval(revisarCronometroNotificaciones, 60000);
+
+        // ==========================================
+        // ----- LÓGICA CRM (LEER Y ESCRIBIR EN SHEETS)
+        // ==========================================
+        
+        const ID_DOCUMENTO_CRM = '1FjpYUWvSmawTZ1cHQkCAo_yajrz9PObso8BdlrH83kk';
+        
+        const CERRADORES = {
+            'Jaqueline': '0',
+            'Rafael': '1523835576',
+            'Bryan': '278003135',
+            'Josue': '1158313175',
+            'Iveth': '2071899969',
+            'Marian': '1756651070'
+        };
+        
+        let cerradorActual = 'Jaqueline'; 
+
+        function renderizarTabs() {
+            const contenedorTabs = document.getElementById('tabsCerradores');
+            contenedorTabs.innerHTML = '';
+            
+            for (const nombre in CERRADORES) {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${nombre === cerradorActual ? 'active' : ''}`;
+                btn.textContent = nombre;
+                btn.onclick = () => { 
+                    cerradorActual = nombre; 
+                    renderizarTabs(); 
+                    cargarTareasCerradorActual(); 
+                };
+                contenedorTabs.appendChild(btn);
+            }
+        }
+
+        // LECTURA
+        function cargarTareasCerradorActual() {
+            const gid = CERRADORES[cerradorActual];
+            const url_csv = `https://docs.google.com/spreadsheets/d/${ID_DOCUMENTO_CRM}/export?format=csv&gid=${gid}`;
+            
+            const grid = document.getElementById('crmGrid');
+            grid.innerHTML = '<div class="loader-text" style="grid-column: 1/-1; text-align:center;">Sincronizando con Google Sheets...</div>';
+
+            Papa.parse(url_csv, {
+                download: true,
+                header: false,
+                complete: function(results) {
+                    procesarYMostrarTareas(results.data);
+                },
+                error: function(err) {
+                    console.error("Error al leer Sheets del CRM:", err);
+                    grid.innerHTML = '<div class="sin-tareas" style="color:#EF4444; border-color:#EF4444;">Error de conexión. Verifica los permisos del Excel.</div>';
+                }
+            });
+        }
+
+        function procesarYMostrarTareas(filas) {
+            const grid = document.getElementById('crmGrid');
+            grid.innerHTML = ''; 
+            
+            tareasParaNotificar = []; // Limpiamos el arreglo de alertas
+            let tareasEncontradas = false;
+
+            for (let i = 1; i < filas.length; i++) {
+                const fila = filas[i];
+                
+                if (fila.length > 0 && fila[0] && fila[0].trim() !== "") {
+                    tareasEncontradas = true;
+                    
+                    const titulo = fila[0].trim();
+                    const descripcion = fila.length > 1 ? fila[1].trim() : '';
+                    const estado = fila.length > 2 ? fila[2].trim().toLowerCase() : '';
+                    const fechaLimite = fila.length > 3 ? fila[3].trim() : '';
+                    const horaLimite = fila.length > 4 ? fila[4].trim() : '';
+
+                    const esCompletada = estado.includes('completada') || estado.includes('completado') || estado.includes('listo');
+
+                    // Si no está completada, tiene fecha y hora, la encolamos para las notificaciones
+                    if (!esCompletada && fechaLimite && horaLimite) {
+                        tareasParaNotificar.push({ titulo: titulo, fecha: fechaLimite, hora: horaLimite });
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = `tarea-card ${esCompletada ? 'completada' : ''}`;
+                    card.title = "Clic para ver detalles de la tarea";
+                    
+                    let bloqueHorario = '';
+                    if(fechaLimite || horaLimite) {
+                        let textoHorario = '📅 Límite: ';
+                        if (fechaLimite) textoHorario += fechaLimite;
+                        if (horaLimite) textoHorario += ` a las ${horaLimite} hrs`;
+                        
+                        bloqueHorario = `<p class="tarea-horario"><span style="color:#3B82F6;">${textoHorario}</span></p>`;
+                    }
+
+                    card.innerHTML = `
+                        <div class="tarea-info" style="width: 100%;">
+                            <h4>${titulo}</h4>
+                            <p class="desc-corta">${descripcion || '<em>Sin descripción...</em>'}</p>
+                            ${bloqueHorario}
+                        </div>
+                    `;
+                    
+                    card.onclick = () => abrirModalVerTarea(titulo, descripcion, estado, fechaLimite, horaLimite, esCompletada);
+                    grid.appendChild(card);
+                }
+            }
+
+            if (!tareasEncontradas) {
+                grid.innerHTML = `<div class="sin-tareas">Sin tareas para ${cerradorActual}</div>`;
+            }
+
+            // Forzamos una primera revisión de tiempo justo al cargar las tareas
+            revisarCronometroNotificaciones();
+        }
+
+        // ESCRITURA
+        function abrirModalCrearTarea() {
+            if(URL_WEB_APP === 'PÉGA_AQUÍ_TU_URL_DE_APPS_SCRIPT') {
+                alert("Primero debes configurar la URL de Apps Script en el código fuente para que esto funcione.");
+                return;
+            }
+            document.getElementById('lblCerradorDestino').textContent = cerradorActual;
+            document.getElementById('formNuevaTarea').reset();
+            document.getElementById('modalCrearTarea').classList.add('active');
+        }
+
+        function enviarNuevaTarea(e) {
+            e.preventDefault();
+            
+            const btnSubmit = document.getElementById('btnEnviarTarea');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = "Enviando a Google Sheets...";
+
+            const payload = {
+                gid: CERRADORES[cerradorActual],
+                titulo: document.getElementById('inputTitulo').value,
+                descripcion: document.getElementById('inputDesc').value,
+                estado: document.getElementById('inputEstado').value,
+                fecha: document.getElementById('inputFecha').value,
+                hora: document.getElementById('inputHora').value
+            };
+
+            // Se usa no-cors para evitar bloqueos del navegador al enviar a Apps Script desde un HTML local/estático
+            fetch(URL_WEB_APP, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = "Guardar Tarea";
+                cerrarModal('modalCrearTarea');
+                
+                document.getElementById('crmGrid').innerHTML = '<div class="loader-text" style="grid-column: 1/-1; text-align:center;">Guardando y actualizando...</div>';
+                setTimeout(cargarTareasCerradorActual, 1500); 
+                
+            }).catch(error => {
+                console.error("Error al guardar:", error);
+                alert("Hubo un error al intentar guardar la tarea. Revisa la consola.");
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = "Guardar Tarea";
+            });
+        }
+
+
+        // --- FUNCIONES DE MODALES ---
+        function abrirModalVerTarea(titulo, desc, estado, fecha, hora, esCompletada) {
+            document.getElementById('modalTitulo').textContent = titulo;
+            document.getElementById('modalDescripcion').textContent = desc || 'Esta tarea no tiene una descripción detallada en el archivo de Excel.';
+            
+            const badgeEstado = document.getElementById('modalEstado');
+            if (esCompletada) {
+                badgeEstado.textContent = 'Completada';
+                badgeEstado.className = 'modal-status completada';
+            } else {
+                badgeEstado.textContent = estado || 'Pendiente';
+                badgeEstado.className = 'modal-status pendiente';
+            }
+
+            const badgeFecha = document.getElementById('modalFecha');
+            if (fecha || hora) {
+                let textoHorario = '📅 Límite: ';
+                if (fecha) textoHorario += fecha;
+                if (hora) textoHorario += ` a las ${hora} hrs`;
+                
+                badgeFecha.innerHTML = textoHorario;
+                badgeFecha.style.display = 'inline-block';
+            } else {
+                badgeFecha.style.display = 'none';
+            }
+
+            document.getElementById('modalTarea').classList.add('active');
+        }
+
+        function cerrarModal(idModal) {
+            document.getElementById(idModal).classList.remove('active');
+        }
+
+        function cerrarModalExterno(event, idModal) {
+            if (event.target.id === idModal) {
+                cerrarModal(idModal);
+            }
+        }
+
+
+        // ==========================================
+        // ----- LÓGICA DEL COTIZADOR Y GOOGLE SHEETS
+        // ==========================================
+        let catalogoPrecios = { "": 0.00 }; 
+        let htmlOpcionesSelect = '<option value="">Seleccione un producto...</option>'; 
+        const tbodyCotizador = document.getElementById('cuerpoCotizador');
+        const SHEET_URL_COTIZADOR = 'https://docs.google.com/spreadsheets/d/13B-dyeTIlmxVl0GVHC_3b8_wz2U96htI2FuRnVu13Lw/export?format=csv&gid=960233291';
+
+        function cargarDatosDeSheets() {
+            catalogoPrecios = { "": 0.00 }; 
+            htmlOpcionesSelect = '<option value="">Seleccione un producto...</option>';
+            
+            document.getElementById('statusSheets').style.display = 'inline-block';
+            document.getElementById('statusSheets').textContent = "Conectando con Google Sheets...";
+            
+            Papa.parse(SHEET_URL_COTIZADOR, {
+                download: true,
+                header: false,
+                complete: function(results) {
+                    const filas = results.data;
+                    let categoriasTemp = {};
+                    let currentCategory = "OTROS";
+
+                    for (let i = 1; i < filas.length; i++) {
+                        const fila = filas[i];
+                        if (fila.length >= 3 && fila[1] && fila[1].trim() !== "") { 
+                            const colA = fila[0].trim();
+                            if (colA !== "") { currentCategory = colA; }
+                            const producto = fila[1].trim();
+                            const precioCrudo = fila[2].replace(/[\$,]/g, ''); 
+                            const precio = parseFloat(precioCrudo) || 0.00;
+
+                            catalogoPrecios[producto] = precio;
+                            if (!categoriasTemp[currentCategory]) { categoriasTemp[currentCategory] = []; }
+                            categoriasTemp[currentCategory].push(producto);
+                        }
+                    }
+
+                    for (const cat in categoriasTemp) {
+                        htmlOpcionesSelect += `<optgroup label="${cat}">`;
+                        categoriasTemp[cat].forEach(prod => { htmlOpcionesSelect += `<option value="${prod}">${prod}</option>`; });
+                        htmlOpcionesSelect += `</optgroup>`;
+                    }
+
+                    document.getElementById('btnAgregar').disabled = false;
+                    document.getElementById('statusSheets').style.display = 'none';
+                    
+                    const selectsExistentes = tbodyCotizador.querySelectorAll('.select-producto');
+                    if(selectsExistentes.length === 0) {
+                        agregarFila(); 
+                    } else {
+                        selectsExistentes.forEach(select => {
+                            const valorAnterior = select.value;
+                            select.innerHTML = htmlOpcionesSelect;
+                            select.value = valorAnterior; 
+                        });
+                        actualizarCotizacion();
+                    }
+                },
+                error: function(err) {
+                    console.error("Error al leer Sheets del Cotizador:", err);
+                    document.getElementById('statusSheets').textContent = "Error al conectar Cotizador.";
+                    document.getElementById('statusSheets').style.color = "#EF4444";
+                }
+            });
+        }
+
+        function actualizarCotizacion() {
+            let total = 0;
+            const filas = tbodyCotizador.querySelectorAll('tr');
+            const requiereFactura = document.getElementById('chkFactura').checked;
+
+            filas.forEach(fila => {
+                const cant = parseFloat(fila.querySelector('.calc-cant').value) || 0;
+                let precioUnitario = parseFloat(fila.querySelector('.calc-precio').value) || 0;
+                const select = fila.querySelector('.select-producto');
+                const nombreProducto = select.value;
+
+                if (requiereFactura && nombreProducto !== "" && !nombreProducto.toUpperCase().includes("SABOR MIO")) {
+                    precioUnitario = precioUnitario * 1.08;
+                }
+
+                const importe = cant * precioUnitario;
+                fila.querySelector('.calc-importe').value = importe.toFixed(2);
+                total += importe;
+            });
+
+            const formateador = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+            document.getElementById('txtTotal').textContent = formateador.format(total);
+        }
+
+        function agregarFila() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="number" class="calc-cant" value="1" min="1"></td>
+                <td><select class="select-producto">${htmlOpcionesSelect}</select></td>
+                <td><input type="number" class="calc-precio" value="0.00" min="0" step="0.01"></td>
+                <td><input type="text" class="calc-importe" value="0.00" readonly></td>
+                <td style="text-align: center;"><button class="btn-remove" onclick="eliminarFila(this)">X</button></td>
+            `;
+            tbodyCotizador.appendChild(tr);
+            vincularEventos(tr); 
+            actualizarCotizacion();
+        }
+
+        function eliminarFila(btn) {
+            const fila = btn.closest('tr');
+            fila.remove();
+            actualizarCotizacion();
+        }
+
+        function vincularEventos(contexto = document) {
+            const inputsNum = contexto.querySelectorAll('.calc-cant, .calc-precio');
+            inputsNum.forEach(input => { input.addEventListener('input', actualizarCotizacion); });
+
+            const selects = contexto.querySelectorAll('.select-producto');
+            selects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const fila = this.closest('tr');
+                    const inputPrecio = fila.querySelector('.calc-precio');
+                    inputPrecio.value = (catalogoPrecios[this.value] || 0).toFixed(2);
+                    actualizarCotizacion();
+                });
+            });
+        }
+
+        function descargarPDF() {
+            const elementoContenedor = document.createElement('div');
+            elementoContenedor.style.padding = '40px';
+            elementoContenedor.style.fontFamily = "'Montserrat', sans-serif";
+            elementoContenedor.style.color = '#121212';
+            
+            const requiereFactura = document.getElementById('chkFactura').checked;
+            const filas = document.querySelectorAll('#cuerpoCotizador tr');
+            let filasHTML = '';
+            
+            filas.forEach(fila => {
+                const cant = fila.querySelector('.calc-cant').value;
+                const select = fila.querySelector('.select-producto');
+                const producto = select.options[select.selectedIndex].text;
+                
+                if(select.value !== "") {
+                    let precioUnitario = parseFloat(fila.querySelector('.calc-precio').value) || 0;
+                    if (requiereFactura && !select.value.toUpperCase().includes('SABOR MIO')) {
+                        precioUnitario = precioUnitario * 1.08;
+                    }
+                    const importe = parseFloat(fila.querySelector('.calc-importe').value).toFixed(2);
+                    
+                    filasHTML += `
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: center;">${cant}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-size: 0.9em;">${producto}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: right;">$${precioUnitario.toFixed(2)}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: bold;">$${importe}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            const total = document.getElementById('txtTotal').innerText;
+            const notaFacturaHTML = requiereFactura ? `<p style="margin: 0 0 5px 0; color: #EF4444; font-weight: bold;">* Cotización incluye 8% por facturación.</p>` : ``;
+
+            elementoContenedor.innerHTML = `
+                <div style="display: flex; justify-content: space-  between; align-items: center; border-bottom: 4px solid #fdea14; padding-bottom: 20px; margin-bottom: 30px;">
+                    <h1 style="margin: 0; font-size: 26px; color: #1E1E1E;">COTIZACIÓN</h1>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-family: 'Open Sans', sans-serif;">
+                    <thead>
+                        <tr style="background-color: #F1F5F9;">
+                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #CBD5E1;">Cant.</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #CBD5E1;">Producto</th>
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #CBD5E1;">Precio</th>
+                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #CBD5E1;">Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody>${filasHTML}</tbody>
+                </table>
+                <div style="width: 320px; margin-left: auto; background-color: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #E2E8F0;">
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px; padding-top: 5px; font-size: 1.2em; font-weight: 800;"><span>Total:</span> <strong>${total}</strong></div>
+                </div>
+            `;
+
+            html2pdf().set({ margin: 10, filename: 'Cotizacion.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(elementoContenedor).save();
+        }
+
+        // Iniciar la carga al abrir la página
+        window.onload = function() {
+            checkPermisoNotificacionesInit(); // Revisa si hay que pedir permiso para las notificaciones
+            renderizarTabs();   
+            cargarTareasCerradorActual(); 
+            cargarDatosDeSheets();   
+        };
+    </script>
+</body>
+</html>
